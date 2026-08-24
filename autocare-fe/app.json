@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "AutoCare",
+    "slug": "autocare-fe",
+    "scheme": "autocare",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#000666"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": { "supportsTablet": true },
+    "android": {},
+    "web": { "bundler": "metro" }
+  }
+}

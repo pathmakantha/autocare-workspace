@@ -1,0 +1,12 @@
+.DS_Store
+node_modules/
+.env
+*.log
+
+# Claude Code local (user-specific) settings
+.claude/settings.local.json
+
+# Expo / React Native
+.expo/
+dist/
+web-build/

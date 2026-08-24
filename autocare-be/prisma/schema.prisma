@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(uuid())
+  name        String
+  email       String   @unique
+  password    String?
+  firebaseUid String?  @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  vehicles Vehicle[]
+}
+
+model Vehicle {
+  id                   String   @id @default(uuid())
+  name                 String
+  registrationNumber   String
+  vehicleType          String
+  brand                String
+  model                String
+  year                 Int
+  mileage              Int      @default(0)
+  licenseExpiry        DateTime?
+  insuranceExpiry      DateTime?
+  emissionTestExpiry   DateTime?
+  serviceReminderDate  DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  maintenanceRecords MaintenanceRecord[]
+
+  @@index([userId])
+}
+
+model MaintenanceRecord {
+  id          String   @id @default(uuid())
+  serviceType String
+  serviceDate DateTime
+  mileage     Int
+  cost        Float
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+}
