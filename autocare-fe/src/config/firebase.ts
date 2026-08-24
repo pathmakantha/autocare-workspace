@@ -1,9 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 import { getApps, initializeApp } from 'firebase/app';
 import { getAuth, initializeAuth } from 'firebase/auth';
 // Metro resolves this to Firebase's React Native build (which has this export) via the
-// package's "react-native" exports condition, but tsc always sees the generic web typings.
-// @ts-expect-error - getReactNativePersistence exists at runtime, missing from tsc's resolved types
+// package's "react-native" exports condition on native platforms only — the web build
+// doesn't export it, so it must never be called when Platform.OS === 'web'.
+// @ts-expect-error - getReactNativePersistence exists at runtime on native, missing from tsc's resolved types
 import { getReactNativePersistence } from 'firebase/auth';
 
 // Get these values from Firebase Console > Project Settings > General > Your apps (Web app).
@@ -20,9 +22,11 @@ const alreadyInitialized = getApps().length > 0;
 const app = alreadyInitialized ? getApps()[0] : initializeApp(firebaseConfig);
 
 // initializeAuth throws if called more than once on the same app (e.g. Fast Refresh),
-// so fall back to the existing auth instance in that case.
-export const firebaseAuth = alreadyInitialized
-  ? getAuth(app)
-  : initializeAuth(app, { persistence: getReactNativePersistence(AsyncStorage) });
+// so fall back to the existing auth instance in that case. On web, always use plain
+// getAuth() (browser-local persistence) since getReactNativePersistence isn't available there.
+export const firebaseAuth =
+  alreadyInitialized || Platform.OS === 'web'
+    ? getAuth(app)
+    : initializeAuth(app, { persistence: getReactNativePersistence(AsyncStorage) });
 
 export default app;
