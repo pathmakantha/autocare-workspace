@@ -17,6 +17,9 @@ export default function MainTabNavigator() {
         tabBarInactiveTintColor: colors.outline,
         tabBarLabelStyle: { fontFamily: 'Inter_600SemiBold', fontSize: 11 },
         tabBarStyle: { height: 60, paddingBottom: 8, backgroundColor: colors.surface },
+        // The design reference's tab bar is text-only, no icons — suppress React
+        // Navigation's default MissingIcon warning glyph rather than inventing artwork.
+        tabBarIcon: () => null,
       }}
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} />
