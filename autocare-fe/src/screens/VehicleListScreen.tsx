@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import CustomInput from '@/components/CustomInput';
@@ -55,7 +56,7 @@ export default function VehicleListScreen() {
     vehicles.length === 0 ? 'No vehicles found.' : 'No vehicles match your search.';
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <Text style={styles.title}>Your Fleet</Text>
         <Pressable style={styles.addBtn} onPress={() => navigation.navigate('AddVehicle')}>
@@ -122,7 +123,7 @@ export default function VehicleListScreen() {
           );
         }}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -132,7 +133,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 60,
+    paddingTop: spacing.lg,
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
   },

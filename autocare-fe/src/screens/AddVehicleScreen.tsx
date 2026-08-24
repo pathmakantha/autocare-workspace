@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import CustomInput from '@/components/CustomInput';
@@ -112,7 +113,7 @@ export default function AddVehicleScreen() {
   };
 
   return (
-    <View style={styles.screen}>
+    <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
       <View style={styles.header}>
         <Text style={styles.back} onPress={() => navigation.goBack()}>
           Back
@@ -159,7 +160,7 @@ export default function AddVehicleScreen() {
 
         <CustomButton label="Save Machine" onPress={handleSave} loading={saving} disabled={saving} />
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -169,7 +170,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 60,
+    paddingTop: spacing.lg,
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
   },

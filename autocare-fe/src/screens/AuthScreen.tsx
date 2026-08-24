@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomInput from '@/components/CustomInput';
 import CustomButton from '@/components/CustomButton';
 import { useAppDispatch } from '@/redux/hooks';
@@ -77,7 +78,8 @@ export default function AuthScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container} style={{ backgroundColor: colors.primary }}>
+    <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+    <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.brandBlock}>
         <Text style={styles.brand}>AutoCare</Text>
         <Text style={styles.brandSub}>PRECISION VEHICLE CONCIERGE</Text>
@@ -142,11 +144,13 @@ export default function AuthScreen() {
         </Text>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { paddingTop: 80, paddingHorizontal: spacing.lg, paddingBottom: 40 },
+  safe: { flex: 1, backgroundColor: colors.primary },
+  container: { paddingTop: spacing.xl, paddingHorizontal: spacing.lg, paddingBottom: 40 },
   brandBlock: { alignItems: 'center', marginBottom: spacing.xl },
   brand: { fontFamily: 'Manrope_800ExtraBold', fontSize: 40, color: colors.white, marginBottom: 4 },
   brandSub: {

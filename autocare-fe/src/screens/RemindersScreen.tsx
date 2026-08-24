@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAppSelector } from '@/redux/hooks';
@@ -15,7 +16,7 @@ export default function RemindersScreen() {
   const items = useMemo(() => getExpiringItems(vehicles), [vehicles]);
 
   return (
-    <View style={styles.screen}>
+    <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
       <View style={styles.header}>
         <Text style={styles.back} onPress={() => navigation.goBack()}>
           Back
@@ -55,7 +56,7 @@ export default function RemindersScreen() {
           );
         }}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 60,
+    paddingTop: spacing.lg,
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
   },

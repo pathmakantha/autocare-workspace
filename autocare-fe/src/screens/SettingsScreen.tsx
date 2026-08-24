@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { logout } from '@/redux/slices/authSlice';
 import { toggleSetting } from '@/redux/slices/settingsSlice';
@@ -31,7 +32,8 @@ export default function SettingsScreen() {
   ];
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <SafeAreaView style={styles.screen} edges={['top']}>
+    <ScrollView contentContainerStyle={styles.content}>
       <Text style={styles.title}>Settings</Text>
 
       <View style={styles.section}>
@@ -87,13 +89,14 @@ export default function SettingsScreen() {
 
       <Text style={styles.version}>AutoCare Version 1.0.0</Text>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
   content: { paddingBottom: 40 },
-  title: { fontFamily: 'Manrope_600SemiBold', fontSize: 24, color: colors.primary, padding: spacing.lg, paddingTop: 60 },
+  title: { fontFamily: 'Manrope_600SemiBold', fontSize: 24, color: colors.primary, padding: spacing.lg },
   section: { paddingHorizontal: spacing.lg, marginBottom: spacing.xl },
   sectionLabel: { fontFamily: 'Inter_700Bold', fontSize: 18, color: colors.outline, marginBottom: spacing.md },
   card: { backgroundColor: colors.surface, padding: spacing.lg, borderRadius: roundness.xl, borderWidth: 1, borderColor: colors.surfaceLow, ...shadows.soft },

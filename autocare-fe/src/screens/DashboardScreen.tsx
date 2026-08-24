@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -29,7 +30,8 @@ export default function DashboardScreen() {
   const nextItem = expiringItems[0];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <SafeAreaView style={styles.container} edges={['top']}>
+    <ScrollView contentContainerStyle={styles.content}>
       <View style={styles.headerBlock}>
         <Text style={styles.hello}>Hello, {userName}</Text>
         <Text style={styles.subhead}>How is your fleet today?</Text>
@@ -107,12 +109,13 @@ export default function DashboardScreen() {
         <Text style={styles.addNewSub}>Register a new machine to your fleet</Text>
       </Pressable>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  content: { padding: spacing.lg, paddingTop: 60 },
+  content: { padding: spacing.lg },
   headerBlock: { marginBottom: spacing.xl },
   hello: { fontFamily: 'Manrope_700Bold', fontSize: 28, color: colors.primary },
   subhead: { fontFamily: 'Inter_400Regular', fontSize: 14, color: colors.outline, letterSpacing: 1 },

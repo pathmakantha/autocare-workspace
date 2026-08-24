@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SplashScreenExpo from 'expo-splash-screen';
 import { useFonts, Manrope_600SemiBold, Manrope_700Bold, Manrope_800ExtraBold } from '@expo-google-fonts/manrope';
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
@@ -31,9 +32,11 @@ export default function App() {
   if (!fontsLoaded) return null;
 
   return (
-    <Provider store={store}>
-      <StatusBar style="dark" />
-      <AppNavigator />
-    </Provider>
+    <SafeAreaProvider>
+      <Provider store={store}>
+        <StatusBar style="dark" />
+        <AppNavigator />
+      </Provider>
+    </SafeAreaProvider>
   );
 }
