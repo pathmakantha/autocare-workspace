@@ -3,3 +3,10 @@ dist/
 .env
 *.log
 .DS_Store
+.vercel
+.env*
+
+# Claude Code / agent tooling artifacts (installed by `vercel integration add neon`)
+.agents/
+.claude/
+skills-lock.json

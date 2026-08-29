@@ -70,7 +70,8 @@ export async function googleAuth(req: Request, res: Response) {
 
   let decoded;
   try {
-    decoded = await getFirebaseAuth().verifyIdToken(idToken);
+    const auth = await getFirebaseAuth();
+    decoded = await auth.verifyIdToken(idToken);
   } catch {
     return res.status(401).json({ message: 'Invalid or expired Google sign-in token' });
   }
