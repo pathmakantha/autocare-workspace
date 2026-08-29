@@ -38,6 +38,7 @@ store.subscribe(() => {
     const guestSnapshot = JSON.stringify({
       vehicles: state.vehicles.vehicles,
       records: state.maintenance.records,
+      profile: state.auth.user,
     });
     if (guestSnapshot !== lastGuestSnapshot) {
       lastGuestSnapshot = guestSnapshot;

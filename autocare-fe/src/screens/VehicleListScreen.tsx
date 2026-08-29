@@ -9,7 +9,9 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { deleteVehicle, removeVehicleLocal } from '@/redux/slices/vehicleSlice';
 import { removeRecordsForVehicleLocal } from '@/redux/slices/maintenanceSlice';
 import { getVehicleStatus } from '@/utils/vehicleStatus';
-import { colors, spacing } from '@/utils/theme';
+import { spacing } from '@/utils/theme';
+import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from '@/hooks/useTranslation';
 import { RootStackParamList } from '@/navigation/types';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
@@ -17,6 +19,8 @@ type Nav = NativeStackNavigationProp<RootStackParamList>;
 export default function VehicleListScreen() {
   const navigation = useNavigation<Nav>();
   const dispatch = useAppDispatch();
+  const { colors } = useTheme();
+  const t = useTranslation();
   const vehicles = useAppSelector((s) => s.vehicles.vehicles);
   const isGuest = useAppSelector((s) => s.auth.isGuest);
   const [search, setSearch] = useState('');
@@ -52,24 +56,19 @@ export default function VehicleListScreen() {
     }
   };
 
-  const emptyText =
-    vehicles.length === 0 ? 'No vehicles found.' : 'No vehicles match your search.';
+  const emptyText = vehicles.length === 0 ? t.noVehiclesFound : t.noMatch;
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       <View style={styles.header}>
-        <Text style={styles.title}>Your Fleet</Text>
-        <Pressable style={styles.addBtn} onPress={() => navigation.navigate('AddVehicle')}>
-          <Text style={styles.addBtnText}>+ Add</Text>
+        <Text style={[styles.title, { color: colors.primary }]}>{t.yourFleet}</Text>
+        <Pressable style={[styles.addBtn, { backgroundColor: colors.primaryBtn }]} onPress={() => navigation.navigate('AddVehicle')}>
+          <Text style={[styles.addBtnText, { color: colors.onBrand }]}>{t.add}</Text>
         </Pressable>
       </View>
 
       <View style={styles.searchWrap}>
-        <CustomInput
-          placeholder="Search by name, plate, or brand"
-          value={search}
-          onChangeText={setSearch}
-        />
+        <CustomInput placeholder={t.searchPh} value={search} onChangeText={setSearch} />
       </View>
 
       <FlatList
@@ -78,11 +77,11 @@ export default function VehicleListScreen() {
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>{emptyText}</Text>
+            <Text style={[styles.emptyText, { color: colors.outline }]}>{emptyText}</Text>
           </View>
         }
         renderItem={({ item: v }) => {
-          const st = getVehicleStatus(v);
+          const st = getVehicleStatus(v, colors, t);
           const confirming = deleteConfirmId === v.id;
           return (
             <View style={styles.cardBlock}>
@@ -99,23 +98,23 @@ export default function VehicleListScreen() {
               />
               <View style={styles.actionsRow}>
                 <Text
-                  style={styles.editLink}
+                  style={[styles.editLink, { color: colors.primary }]}
                   onPress={() => navigation.navigate('AddVehicle', { vehicleId: v.id })}
                 >
-                  Edit Details
+                  {t.editDetails}
                 </Text>
                 {confirming ? (
                   <>
-                    <Text style={styles.cancelLink} onPress={() => setDeleteConfirmId(null)}>
-                      Cancel
+                    <Text style={[styles.cancelLink, { color: colors.outline }]} onPress={() => setDeleteConfirmId(null)}>
+                      {t.cancel}
                     </Text>
-                    <Text style={styles.confirmLink} onPress={() => handleDelete(v.id)}>
-                      {deletingId === v.id ? 'Removing...' : 'Confirm Remove'}
+                    <Text style={[styles.confirmLink, { color: colors.error }]} onPress={() => handleDelete(v.id)}>
+                      {deletingId === v.id ? '...' : t.confirmRemove}
                     </Text>
                   </>
                 ) : (
-                  <Text style={styles.removeLink} onPress={() => setDeleteConfirmId(v.id)}>
-                    Remove Machine
+                  <Text style={[styles.removeLink, { color: colors.error }]} onPress={() => setDeleteConfirmId(v.id)}>
+                    {t.removeMachine}
                   </Text>
                 )}
               </View>
@@ -128,7 +127,7 @@ export default function VehicleListScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
+  container: { flex: 1 },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -137,9 +136,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
   },
-  title: { fontFamily: 'Manrope_600SemiBold', fontSize: 24, color: colors.primary },
-  addBtn: { backgroundColor: colors.primary, borderRadius: 12, paddingVertical: 8, paddingHorizontal: 16 },
-  addBtnText: { fontFamily: 'Inter_700Bold', fontSize: 12, color: colors.white },
+  title: { fontFamily: 'Manrope_600SemiBold', fontSize: 24 },
+  addBtn: { borderRadius: 12, paddingVertical: 8, paddingHorizontal: 16 },
+  addBtnText: { fontFamily: 'Inter_700Bold', fontSize: 12 },
   searchWrap: { paddingHorizontal: spacing.lg, paddingBottom: spacing.sm },
   listContent: { paddingHorizontal: spacing.lg, paddingBottom: spacing.lg },
   cardBlock: { marginBottom: spacing.lg },
@@ -151,10 +150,10 @@ const styles = StyleSheet.create({
     paddingRight: 8,
     paddingTop: 8,
   },
-  editLink: { fontFamily: 'Inter_600SemiBold', fontSize: 11, color: colors.primary },
-  cancelLink: { fontFamily: 'Inter_600SemiBold', fontSize: 11, color: colors.outline },
-  confirmLink: { fontFamily: 'Inter_700Bold', fontSize: 11, color: colors.error },
-  removeLink: { fontFamily: 'Inter_600SemiBold', fontSize: 11, color: colors.error },
+  editLink: { fontFamily: 'Inter_600SemiBold', fontSize: 11 },
+  cancelLink: { fontFamily: 'Inter_600SemiBold', fontSize: 11 },
+  confirmLink: { fontFamily: 'Inter_700Bold', fontSize: 11 },
+  removeLink: { fontFamily: 'Inter_600SemiBold', fontSize: 11 },
   emptyState: { padding: 100, alignItems: 'center' },
-  emptyText: { fontFamily: 'Inter_400Regular', fontSize: 14, color: colors.outline },
+  emptyText: { fontFamily: 'Inter_400Regular', fontSize: 14 },
 });

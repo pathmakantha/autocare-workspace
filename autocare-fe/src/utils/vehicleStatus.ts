@@ -1,5 +1,6 @@
 import { Vehicle } from '@/types/vehicle';
-import { colors } from './theme';
+import { ThemeColors } from './theme';
+import { Strings } from '@/i18n/translations';
 
 export type StatusKind = 'ok' | 'warning' | 'error';
 
@@ -30,15 +31,15 @@ export function nearestExpiryDays(vehicle: Vehicle): number {
   return minDays;
 }
 
-export function getVehicleStatus(vehicle: Vehicle): Status {
+export function getVehicleStatus(vehicle: Vehicle, colors: ThemeColors, t: Strings): Status {
   const minDays = nearestExpiryDays(vehicle);
   if (minDays <= 7) {
-    return { status: 'error', label: 'URGENT', color: colors.error, bg: colors.error + '20' };
+    return { status: 'error', label: t.urgent.toUpperCase(), color: colors.error, bg: colors.error + '20' };
   }
   if (minDays <= 30) {
-    return { status: 'warning', label: 'DUE SOON', color: colors.warning, bg: colors.warning + '20' };
+    return { status: 'warning', label: t.dueSoon.toUpperCase(), color: colors.warning, bg: colors.warning + '20' };
   }
-  return { status: 'ok', label: 'HEALTHY', color: colors.success, bg: colors.success + '20' };
+  return { status: 'ok', label: t.healthy.toUpperCase(), color: colors.success, bg: colors.success + '20' };
 }
 
 export type ExpiringItem = {
@@ -50,16 +51,19 @@ export type ExpiringItem = {
   daysLeft: number;
 };
 
-const FIELD_LABELS: Record<(typeof EXPIRY_FIELDS)[number], string> = {
-  licenseExpiry: 'License Expiry',
-  insuranceExpiry: 'Insurance Expiry',
-  emissionTestExpiry: 'Emission Test',
-  serviceReminderDate: 'Service Reminder',
-};
+function fieldLabels(t: Strings): Record<(typeof EXPIRY_FIELDS)[number], string> {
+  return {
+    licenseExpiry: t.licenseExpiry,
+    insuranceExpiry: t.insuranceExpiry,
+    emissionTestExpiry: t.emissionTest,
+    serviceReminderDate: t.serviceReminder,
+  };
+}
 
 /** Every (vehicle x expiry field) pair due within 0-30 days, soonest first. */
-export function getExpiringItems(vehicles: Vehicle[]): ExpiringItem[] {
+export function getExpiringItems(vehicles: Vehicle[], t: Strings): ExpiringItem[] {
   const today = new Date();
+  const labels = fieldLabels(t);
   const items: ExpiringItem[] = [];
   vehicles.forEach((v) => {
     EXPIRY_FIELDS.forEach((field) => {
@@ -71,7 +75,7 @@ export function getExpiringItems(vehicles: Vehicle[]): ExpiringItem[] {
           vehicleId: v.id,
           vehicleName: v.name,
           field,
-          label: FIELD_LABELS[field],
+          label: labels[field],
           date: dateVal,
           daysLeft: days,
         });
@@ -82,12 +86,12 @@ export function getExpiringItems(vehicles: Vehicle[]): ExpiringItem[] {
 }
 
 /** Finer 7/14/30 urgency cut used for the reminder pill (distinct from the 7/30 status badge). */
-export function reminderUrgency(daysLeft: number): { color: string; bg: string } {
+export function reminderUrgency(daysLeft: number, colors: ThemeColors): { color: string; bg: string } {
   if (daysLeft <= 7) return { color: colors.error, bg: colors.error + '20' };
   if (daysLeft <= 14) return { color: colors.warning, bg: colors.warning + '20' };
   return { color: colors.success, bg: colors.success + '20' };
 }
 
-export function daysLeftLabel(daysLeft: number): string {
-  return daysLeft === 0 ? 'Today' : `${daysLeft}d left`;
+export function daysLeftLabel(daysLeft: number, t: Strings): string {
+  return daysLeft === 0 ? t.today : `${daysLeft} ${t.dLeft}`;
 }

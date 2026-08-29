@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import apiClient from '@/api/client';
 import { User } from '@/types/user';
 
 export type AppScreen = 'splash' | 'auth' | 'main';
@@ -19,6 +20,13 @@ const initialState: AuthState = {
   token: null,
 };
 
+export type ProfilePayload = { name: string; email: string; phone?: string };
+
+export const updateProfile = createAsyncThunk('auth/updateProfile', async (payload: ProfilePayload) => {
+  const { data } = await apiClient.patch<{ user: User }>('/auth/me', payload);
+  return data.user;
+});
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -36,6 +44,12 @@ const authSlice = createSlice({
     continueAsGuest(state) {
       state.isGuest = true;
       state.screen = 'main';
+      if (!state.user) state.user = { id: 'guest', name: '', email: '', phone: '' };
+    },
+    // Guest mode has no backend account — profile edits (and restoring a saved
+    // guest profile from AsyncStorage) update local state directly.
+    updateProfileLocal(state, action: PayloadAction<User>) {
+      state.user = action.payload;
     },
     logout(state) {
       state.isAuthenticated = false;
@@ -45,7 +59,12 @@ const authSlice = createSlice({
       state.screen = 'auth';
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(updateProfile.fulfilled, (state, action) => {
+      state.user = action.payload;
+    });
+  },
 });
 
-export const { setScreen, loginSuccess, continueAsGuest, logout } = authSlice.actions;
+export const { setScreen, loginSuccess, continueAsGuest, updateProfileLocal, logout } = authSlice.actions;
 export default authSlice.reducer;

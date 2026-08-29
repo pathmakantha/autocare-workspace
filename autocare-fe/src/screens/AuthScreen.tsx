@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomInput from '@/components/CustomInput';
 import CustomButton from '@/components/CustomButton';
-import { useAppDispatch } from '@/redux/hooks';
-import { continueAsGuest, loginSuccess } from '@/redux/slices/authSlice';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { continueAsGuest, loginSuccess, updateProfileLocal } from '@/redux/slices/authSlice';
+import { setLanguage } from '@/redux/slices/settingsSlice';
 import { fetchVehicles, setVehicles } from '@/redux/slices/vehicleSlice';
 import { setRecords } from '@/redux/slices/maintenanceSlice';
-import { colors, roundness, shadows, spacing } from '@/utils/theme';
+import { roundness, spacing } from '@/utils/theme';
+import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from '@/hooks/useTranslation';
+import { LANG_LABELS, LANG_ORDER } from '@/i18n/translations';
 import apiClient from '@/api/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GUEST_DATA_STORAGE_KEY } from '@/redux/store';
@@ -15,6 +19,9 @@ import { useGoogleAuth } from '@/hooks/useGoogleAuth';
 
 export default function AuthScreen() {
   const dispatch = useAppDispatch();
+  const { colors, shadows } = useTheme();
+  const t = useTranslation();
+  const language = useAppSelector((s) => s.settings.language);
   const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -47,7 +54,7 @@ export default function AuthScreen() {
 
   const handleAuth = async () => {
     if (!email || !password || (!isLogin && !name)) {
-      setError('Please fill all fields');
+      setError(t.fillFields);
       return;
     }
     setError('');
@@ -68,7 +75,8 @@ export default function AuthScreen() {
     try {
       const guestRaw = await AsyncStorage.getItem(GUEST_DATA_STORAGE_KEY);
       if (guestRaw) {
-        const { vehicles, records } = JSON.parse(guestRaw);
+        const { vehicles, records, profile } = JSON.parse(guestRaw);
+        if (profile) dispatch(updateProfileLocal(profile));
         dispatch(setVehicles(vehicles || []));
         dispatch(setRecords(records || []));
       }
@@ -78,21 +86,41 @@ export default function AuthScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: colors.brandDeep }]} edges={['top', 'bottom']}>
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.brandBlock}>
         <Text style={styles.brand}>AutoCare</Text>
-        <Text style={styles.brandSub}>PRECISION VEHICLE CONCIERGE</Text>
+        <Text style={styles.brandSub}>{t.tagline.toUpperCase()}</Text>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>{isLogin ? 'Welcome Back' : 'Create Account'}</Text>
+      <View style={styles.langRow}>
+        {LANG_ORDER.map((code) => {
+          const active = language === code;
+          return (
+            <Pressable
+              key={code}
+              onPress={() => dispatch(setLanguage(code))}
+              style={[
+                styles.langChip,
+                { backgroundColor: active ? '#ffffff' : 'rgba(255,255,255,0.08)' },
+              ]}
+            >
+              <Text style={[styles.langChipText, { color: active ? '#000666' : '#ffffff' }]}>
+                {LANG_LABELS[code]}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }, shadows.soft]}>
+        <Text style={[styles.cardTitle, { color: colors.text }]}>{isLogin ? t.welcomeBack : t.createAccount}</Text>
 
         {!isLogin && (
-          <CustomInput label="Full Name" placeholder="Enter your name" value={name} onChangeText={setName} />
+          <CustomInput label={t.fullName} placeholder={t.enterName} value={name} onChangeText={setName} />
         )}
         <CustomInput
-          label="Email"
+          label={t.email}
           placeholder="your@email.com"
           value={email}
           onChangeText={setEmail}
@@ -100,23 +128,23 @@ export default function AuthScreen() {
           keyboardType="email-address"
         />
         <CustomInput
-          label="Password"
+          label={t.password}
           placeholder="********"
           value={password}
           onChangeText={setPassword}
           secureTextEntry
         />
 
-        {!!error && <Text style={styles.error}>{error}</Text>}
+        {!!error && <Text style={[styles.error, { color: colors.error }]}>{error}</Text>}
 
         <CustomButton
-          label={isLogin ? 'Log In' : 'Sign Up'}
+          label={isLogin ? t.login : t.signUp}
           onPress={handleAuth}
           loading={loading}
           style={{ marginTop: spacing.xs }}
         />
 
-        <Text style={styles.divider}>OR</Text>
+        <Text style={[styles.divider, { color: colors.text }]}>{t.or}</Text>
 
         <CustomButton
           label="Continue with Google"
@@ -126,21 +154,23 @@ export default function AuthScreen() {
           variant="muted"
         />
         {!isPlatformConfigured && (
-          <Text style={styles.googleNote}>
+          <Text style={[styles.googleNote, { color: colors.text }]}>
             Google sign-in isn't set up for this platform yet.{'\n'}Try the web build for now.
           </Text>
         )}
 
-        <Text style={styles.switchText} onPress={() => setIsLogin(!isLogin)}>
-          {isLogin ? "Don't have an account? Sign Up" : 'Already have an account? Log In'}
+        <Text style={[styles.switchText, { color: colors.primary }]} onPress={() => setIsLogin(!isLogin)}>
+          {isLogin ? t.noAccount : t.haveAccount}
         </Text>
       </View>
 
       <View style={styles.guestBlock}>
-        <Text style={styles.or}>OR</Text>
-        <CustomButton label="Continue as Guest" onPress={handleGuest} variant="outline" />
+        <Text style={styles.or}>{t.or}</Text>
+        <CustomButton label={t.continueGuest} onPress={handleGuest} variant="outline" />
         <Text style={styles.guestNote}>
-          Add up to 1 vehicle without an account.{'\n'}Data is stored locally.
+          {t.guestNote}
+          {'\n'}
+          {t.guestNote2}
         </Text>
       </View>
     </ScrollView>
@@ -149,38 +179,43 @@ export default function AuthScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.primary },
+  safe: { flex: 1 },
   container: { paddingTop: spacing.xl, paddingHorizontal: spacing.lg, paddingBottom: 40 },
-  brandBlock: { alignItems: 'center', marginBottom: spacing.xl },
-  brand: { fontFamily: 'Manrope_800ExtraBold', fontSize: 40, color: colors.white, marginBottom: 4 },
+  brandBlock: { alignItems: 'center', marginBottom: spacing.lg },
+  brand: { fontFamily: 'Manrope_800ExtraBold', fontSize: 40, color: '#ffffff', marginBottom: 4 },
   brandSub: {
     fontFamily: 'Inter_400Regular',
-    fontSize: 14,
-    color: colors.white,
+    fontSize: 13,
+    color: '#ffffff',
     opacity: 0.7,
-    letterSpacing: 2,
+    letterSpacing: 1.5,
     textTransform: 'uppercase',
+    textAlign: 'center',
   },
+  langRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, justifyContent: 'center', marginBottom: spacing.lg },
+  langChip: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.25)',
+  },
+  langChipText: { fontFamily: 'Inter_600SemiBold', fontSize: 11 },
   card: {
-    backgroundColor: colors.surface,
     padding: spacing.lg,
     borderRadius: roundness.xl,
     borderWidth: 1,
-    borderColor: colors.surfaceLow,
-    ...shadows.soft,
   },
   cardTitle: {
     fontFamily: 'Manrope_700Bold',
     fontSize: 24,
-    color: colors.text,
     textAlign: 'center',
     marginBottom: spacing.lg,
   },
-  error: { fontFamily: 'Inter_400Regular', fontSize: 11, color: colors.error, textAlign: 'center', marginBottom: spacing.sm },
+  error: { fontFamily: 'Inter_400Regular', fontSize: 11, textAlign: 'center', marginBottom: spacing.sm },
   divider: {
     fontFamily: 'Inter_400Regular',
     fontSize: 11,
-    color: colors.text,
     opacity: 0.5,
     textAlign: 'center',
     marginVertical: spacing.md,
@@ -188,7 +223,6 @@ const styles = StyleSheet.create({
   googleNote: {
     fontFamily: 'Inter_400Regular',
     fontSize: 11,
-    color: colors.text,
     opacity: 0.6,
     textAlign: 'center',
     marginTop: spacing.sm,
@@ -197,16 +231,15 @@ const styles = StyleSheet.create({
   switchText: {
     fontFamily: 'Inter_500Medium',
     fontSize: 12,
-    color: colors.primary,
     textAlign: 'center',
     marginTop: spacing.md,
   },
   guestBlock: { alignItems: 'center', marginTop: spacing.xl, paddingBottom: 40 },
-  or: { fontFamily: 'Inter_400Regular', fontSize: 11, color: colors.white, opacity: 0.6, marginBottom: spacing.md },
+  or: { fontFamily: 'Inter_400Regular', fontSize: 11, color: '#ffffff', opacity: 0.6, marginBottom: spacing.md },
   guestNote: {
     fontFamily: 'Inter_400Regular',
     fontSize: 11,
-    color: colors.white,
+    color: '#ffffff',
     opacity: 0.7,
     textAlign: 'center',
     marginTop: spacing.md,

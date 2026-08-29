@@ -1,6 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, ViewStyle } from 'react-native';
-import { colors, roundness, spacing, typography } from '@/utils/theme';
+import { roundness, spacing } from '@/utils/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 type Variant = 'primary' | 'outline' | 'muted' | 'danger';
 
@@ -21,8 +22,22 @@ export default function CustomButton({
   loading,
   style,
 }: Props) {
-  const variantStyle = styles[variant];
-  const textVariantStyle = textStyles[variant];
+  const { colors } = useTheme();
+
+  const variantStyle: ViewStyle = {
+    primary: { backgroundColor: colors.primaryBtn },
+    outline: { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.white },
+    muted: { backgroundColor: colors.surfaceLow },
+    danger: { backgroundColor: colors.error },
+  }[variant];
+
+  const textColor = {
+    primary: colors.onBrand,
+    outline: colors.white,
+    muted: colors.primary,
+    danger: colors.onBrand,
+  }[variant];
+
   return (
     <Pressable
       onPress={onPress}
@@ -36,9 +51,9 @@ export default function CustomButton({
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'outline' || variant === 'muted' ? colors.primary : colors.white} />
+        <ActivityIndicator color={textColor} />
       ) : (
-        <Text style={[styles.text, textVariantStyle]}>{label}</Text>
+        <Text style={[styles.text, { color: textColor }]}>{label}</Text>
       )}
     </Pressable>
   );
@@ -53,21 +68,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  primary: { backgroundColor: colors.primary },
-  outline: { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.white },
-  muted: { backgroundColor: colors.surfaceLow },
-  danger: { backgroundColor: colors.error },
   text: {
     fontFamily: 'Inter_600SemiBold',
     fontSize: 18,
   },
   disabled: { opacity: 0.5 },
   pressed: { opacity: 0.85 },
-});
-
-const textStyles = StyleSheet.create({
-  primary: { color: colors.white },
-  outline: { color: colors.white },
-  muted: { color: colors.primary },
-  danger: { color: colors.white },
 });

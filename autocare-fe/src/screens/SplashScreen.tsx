@@ -2,16 +2,19 @@ import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppDispatch } from '@/redux/hooks';
-import { continueAsGuest, loginSuccess, setScreen } from '@/redux/slices/authSlice';
+import { continueAsGuest, loginSuccess, setScreen, updateProfileLocal } from '@/redux/slices/authSlice';
 import { hydrateSettings } from '@/redux/slices/settingsSlice';
 import { setVehicles, fetchVehicles } from '@/redux/slices/vehicleSlice';
 import { setRecords } from '@/redux/slices/maintenanceSlice';
 import apiClient from '@/api/client';
 import { GUEST_DATA_STORAGE_KEY, SETTINGS_STORAGE_KEY } from '@/redux/store';
-import { colors } from '@/utils/theme';
+import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function SplashScreen() {
   const dispatch = useAppDispatch();
+  const { colors } = useTheme();
+  const t = useTranslation();
 
   useEffect(() => {
     let cancelled = false;
@@ -41,9 +44,10 @@ export default function SplashScreen() {
       try {
         const guestRaw = await AsyncStorage.getItem(GUEST_DATA_STORAGE_KEY);
         if (guestRaw) {
-          const { vehicles, records } = JSON.parse(guestRaw);
+          const { vehicles, records, profile } = JSON.parse(guestRaw);
           if (cancelled) return;
           dispatch(continueAsGuest());
+          if (profile) dispatch(updateProfileLocal(profile));
           dispatch(setVehicles(vehicles || []));
           dispatch(setRecords(records || []));
           return;
@@ -66,14 +70,14 @@ export default function SplashScreen() {
   }, [dispatch]);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.logoCircle}>
-        <Text style={styles.logoText}>AC</Text>
+    <View style={[styles.container, { backgroundColor: colors.brandDeep }]}>
+      <View style={[styles.logoCircle, { backgroundColor: colors.white }]}>
+        <Text style={[styles.logoText, { color: colors.primary }]}>AC</Text>
       </View>
       <Text style={styles.title}>AutoCare</Text>
-      <Text style={styles.subtitle}>Precision Vehicle Concierge</Text>
+      <Text style={styles.subtitle}>{t.tagline}</Text>
       <View style={styles.footer}>
-        <Text style={styles.footerText}>SECURE • RELIABLE • AUTOMATED</Text>
+        <Text style={styles.footerText}>{t.secure}</Text>
       </View>
     </View>
   );
@@ -82,7 +86,6 @@ export default function SplashScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -90,31 +93,32 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 24,
   },
-  logoText: { fontFamily: 'Manrope_800ExtraBold', fontSize: 48, color: colors.primary },
+  logoText: { fontFamily: 'Manrope_800ExtraBold', fontSize: 48 },
   title: {
     fontFamily: 'Manrope_800ExtraBold',
     fontSize: 36,
-    color: colors.white,
+    color: '#ffffff',
     letterSpacing: 2,
   },
   subtitle: {
     fontFamily: 'Inter_400Regular',
     fontSize: 14,
-    color: colors.white,
+    color: '#ffffff',
     opacity: 0.7,
     marginTop: 8,
     letterSpacing: 1,
+    textAlign: 'center',
+    paddingHorizontal: 32,
   },
   footer: { position: 'absolute', bottom: 50 },
   footerText: {
     fontFamily: 'Inter_400Regular',
     fontSize: 11,
-    color: colors.white,
+    color: '#ffffff',
     opacity: 0.5,
     textTransform: 'uppercase',
     letterSpacing: 1,

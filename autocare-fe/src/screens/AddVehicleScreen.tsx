@@ -7,7 +7,9 @@ import CustomInput from '@/components/CustomInput';
 import CustomButton from '@/components/CustomButton';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { addVehicleLocal, createVehicle, updateVehicle, updateVehicleLocal } from '@/redux/slices/vehicleSlice';
-import { colors, roundness, shadows, spacing } from '@/utils/theme';
+import { roundness, spacing } from '@/utils/theme';
+import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from '@/hooks/useTranslation';
 import { RootStackParamList } from '@/navigation/types';
 import { VehicleFormData, VehiclePayload } from '@/types/vehicle';
 import { generateLocalId } from '@/utils/localId';
@@ -33,6 +35,8 @@ export default function AddVehicleScreen() {
   const navigation = useNavigation<Nav>();
   const route = useRoute<R>();
   const dispatch = useAppDispatch();
+  const { colors, shadows } = useTheme();
+  const t = useTranslation();
   const vehicles = useAppSelector((s) => s.vehicles.vehicles);
   const isGuest = useAppSelector((s) => s.auth.isGuest);
 
@@ -68,11 +72,11 @@ export default function AddVehicleScreen() {
 
   const handleSave = async () => {
     if (!form.name || !form.registrationNumber || !form.vehicleType) {
-      setError('Please fill all required fields');
+      setError(t.fillRequired);
       return;
     }
     if (isGuest && vehicles.length >= 1 && !editingVehicleId) {
-      setError('Guest mode only allows 1 vehicle. Please login to add more.');
+      setError(t.guestLimit);
       return;
     }
     const payload: VehiclePayload = {
@@ -113,59 +117,61 @@ export default function AddVehicleScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
+    <SafeAreaView style={[styles.screen, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
       <View style={styles.header}>
-        <Text style={styles.back} onPress={() => navigation.goBack()}>
-          Back
+        <Text style={[styles.back, { color: colors.primary }]} onPress={() => navigation.goBack()}>
+          {t.back}
         </Text>
-        <Text style={styles.headerTitle}>{editingVehicleId ? 'Edit Vehicle' : 'Add Vehicle'}</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>
+          {editingVehicleId ? t.editVehicleT : t.addVehicleT}
+        </Text>
         <View style={{ width: 40 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Basic Info</Text>
-          <CustomInput label="Vehicle Name" placeholder="e.g. My Daily Car" value={form.name} onChangeText={(t) => setField('name', t)} />
-          <CustomInput label="Registration Number" placeholder="e.g. ABC-1234" value={form.registrationNumber} onChangeText={(t) => setField('registrationNumber', t)} />
-          <CustomInput label="Vehicle Type" placeholder="e.g. Sedan, SUV, Bike" value={form.vehicleType} onChangeText={(t) => setField('vehicleType', t)} />
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }, shadows.soft]}>
+          <Text style={[styles.cardTitle, { color: colors.primary }]}>{t.basicInfo}</Text>
+          <CustomInput label={t.vehicleName} placeholder={t.vehicleNamePh} value={form.name} onChangeText={(v) => setField('name', v)} />
+          <CustomInput label={t.regNumber} placeholder="e.g. ABC-1234" value={form.registrationNumber} onChangeText={(v) => setField('registrationNumber', v)} />
+          <CustomInput label={t.vehicleType} placeholder={t.typePh} value={form.vehicleType} onChangeText={(v) => setField('vehicleType', v)} />
         </View>
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Model Details</Text>
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }, shadows.soft]}>
+          <Text style={[styles.cardTitle, { color: colors.primary }]}>{t.modelDetails}</Text>
           <View style={styles.row}>
             <View style={{ flex: 1 }}>
-              <CustomInput label="Brand" placeholder="Toyota" value={form.brand} onChangeText={(t) => setField('brand', t)} />
+              <CustomInput label={t.brand} placeholder="Toyota" value={form.brand} onChangeText={(v) => setField('brand', v)} />
             </View>
             <View style={{ flex: 1 }}>
-              <CustomInput label="Model" placeholder="Camry" value={form.model} onChangeText={(t) => setField('model', t)} />
+              <CustomInput label={t.model} placeholder="Camry" value={form.model} onChangeText={(v) => setField('model', v)} />
             </View>
           </View>
-          <CustomInput label="Year" placeholder="2023" value={form.year} onChangeText={(t) => setField('year', t)} keyboardType="numeric" />
+          <CustomInput label={t.year} placeholder="2023" value={form.year} onChangeText={(v) => setField('year', v)} keyboardType="numeric" />
         </View>
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Odometer</Text>
-          <CustomInput label="Current Mileage" placeholder="e.g. 32000" value={form.mileage} onChangeText={(t) => setField('mileage', t)} keyboardType="numeric" />
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }, shadows.soft]}>
+          <Text style={[styles.cardTitle, { color: colors.primary }]}>{t.odometer}</Text>
+          <CustomInput label={t.currentMileage} placeholder="e.g. 32000" value={form.mileage} onChangeText={(v) => setField('mileage', v)} keyboardType="numeric" />
         </View>
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Expiry Dates (YYYY-MM-DD)</Text>
-          <CustomInput label="License Expiry" placeholder="2024-12-31" value={form.licenseExpiry} onChangeText={(t) => setField('licenseExpiry', t)} />
-          <CustomInput label="Insurance Expiry" placeholder="2024-12-31" value={form.insuranceExpiry} onChangeText={(t) => setField('insuranceExpiry', t)} />
-          <CustomInput label="Emission Test Expiry" placeholder="2024-12-31" value={form.emissionTestExpiry} onChangeText={(t) => setField('emissionTestExpiry', t)} />
-          <CustomInput label="Service Reminder" placeholder="2024-06-30" value={form.serviceReminderDate} onChangeText={(t) => setField('serviceReminderDate', t)} />
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }, shadows.soft]}>
+          <Text style={[styles.cardTitle, { color: colors.primary }]}>{t.expiryDates}</Text>
+          <CustomInput label={t.licenseExpiry} placeholder="2027-12-31" value={form.licenseExpiry} onChangeText={(v) => setField('licenseExpiry', v)} />
+          <CustomInput label={t.insuranceExpiry} placeholder="2027-12-31" value={form.insuranceExpiry} onChangeText={(v) => setField('insuranceExpiry', v)} />
+          <CustomInput label={t.emissionTest} placeholder="2027-12-31" value={form.emissionTestExpiry} onChangeText={(v) => setField('emissionTestExpiry', v)} />
+          <CustomInput label={t.serviceReminder} placeholder="2027-06-30" value={form.serviceReminderDate} onChangeText={(v) => setField('serviceReminderDate', v)} />
         </View>
 
-        {!!error && <Text style={styles.error}>{error}</Text>}
+        {!!error && <Text style={[styles.error, { color: colors.error }]}>{error}</Text>}
 
-        <CustomButton label="Save Machine" onPress={handleSave} loading={saving} disabled={saving} />
+        <CustomButton label={t.saveMachine} onPress={handleSave} loading={saving} disabled={saving} />
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.background },
+  screen: { flex: 1 },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -174,19 +180,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
   },
-  back: { fontFamily: 'Inter_500Medium', fontSize: 16, color: colors.primary },
-  headerTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 20, color: colors.text },
+  back: { fontFamily: 'Inter_500Medium', fontSize: 16 },
+  headerTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 20 },
   content: { paddingHorizontal: spacing.lg, paddingBottom: 40 },
   card: {
-    backgroundColor: colors.surface,
     padding: spacing.lg,
     borderRadius: roundness.xl,
     borderWidth: 1,
-    borderColor: colors.surfaceLow,
     marginBottom: spacing.xl,
-    ...shadows.soft,
   },
-  cardTitle: { fontFamily: 'Inter_700Bold', fontSize: 18, color: colors.primary, marginBottom: spacing.md },
+  cardTitle: { fontFamily: 'Inter_700Bold', fontSize: 18, marginBottom: spacing.md },
   row: { flexDirection: 'row', gap: 10 },
-  error: { fontFamily: 'Inter_400Regular', fontSize: 11, color: colors.error, textAlign: 'center', marginBottom: spacing.md },
+  error: { fontFamily: 'Inter_400Regular', fontSize: 11, textAlign: 'center', marginBottom: spacing.md },
 });

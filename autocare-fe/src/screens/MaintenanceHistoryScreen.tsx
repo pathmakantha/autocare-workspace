@@ -7,7 +7,9 @@ import CustomInput from '@/components/CustomInput';
 import CustomButton from '@/components/CustomButton';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { addRecordLocal, createRecord, deleteRecord, fetchRecords, removeRecordLocal } from '@/redux/slices/maintenanceSlice';
-import { colors, roundness, shadows, spacing } from '@/utils/theme';
+import { roundness, spacing } from '@/utils/theme';
+import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from '@/hooks/useTranslation';
 import { RootStackParamList } from '@/navigation/types';
 import { generateLocalId } from '@/utils/localId';
 
@@ -18,6 +20,8 @@ export default function MaintenanceHistoryScreen() {
   const navigation = useNavigation<Nav>();
   const route = useRoute<R>();
   const dispatch = useAppDispatch();
+  const { colors, shadows } = useTheme();
+  const t = useTranslation();
   const { vehicleId } = route.params;
 
   const vehicle = useAppSelector((s) => s.vehicles.vehicles.find((v) => v.id === vehicleId));
@@ -70,7 +74,7 @@ export default function MaintenanceHistoryScreen() {
 
   const handleSave = async () => {
     if (!serviceType || !mileage || !cost) {
-      setFormError('Please fill all required fields');
+      setFormError(t.fillRequired);
       return;
     }
     const payload = {
@@ -112,30 +116,30 @@ export default function MaintenanceHistoryScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
+    <SafeAreaView style={[styles.screen, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
       <View style={styles.header}>
-        <Text style={styles.back} onPress={() => navigation.goBack()}>
-          Back
+        <Text style={[styles.back, { color: colors.primary }]} onPress={() => navigation.goBack()}>
+          {t.back}
         </Text>
-        <Text style={styles.headerTitle}>{vehicle?.name ?? 'Vehicle'}</Text>
-        <Pressable style={styles.addBtn} onPress={openModal}>
-          <Text style={styles.addBtnText}>+ Add</Text>
+        <Text style={[styles.headerTitle, { color: colors.primary }]}>{vehicle?.name ?? t.vehicles}</Text>
+        <Pressable style={[styles.addBtn, { backgroundColor: colors.primaryBtn }]} onPress={openModal}>
+          <Text style={[styles.addBtnText, { color: colors.onBrand }]}>{t.add}</Text>
         </Pressable>
       </View>
 
       {stats && (
         <View style={styles.statsRow}>
-          <View style={styles.statChip}>
-            <Text style={styles.statValue}>${stats.total}</Text>
-            <Text style={styles.statLabel}>Total Spent</Text>
+          <View style={[styles.statChip, { backgroundColor: colors.surface }, shadows.soft]}>
+            <Text style={[styles.statValue, { color: colors.primary }]}>${stats.total}</Text>
+            <Text style={[styles.statLabel, { color: colors.outline }]}>{t.totalSpent}</Text>
           </View>
-          <View style={styles.statChip}>
-            <Text style={styles.statValue}>{stats.count}</Text>
-            <Text style={styles.statLabel}>Services</Text>
+          <View style={[styles.statChip, { backgroundColor: colors.surface }, shadows.soft]}>
+            <Text style={[styles.statValue, { color: colors.primary }]}>{stats.count}</Text>
+            <Text style={[styles.statLabel, { color: colors.outline }]}>{t.services}</Text>
           </View>
-          <View style={styles.statChip}>
-            <Text style={styles.statValue}>${stats.avg}</Text>
-            <Text style={styles.statLabel}>Avg Cost</Text>
+          <View style={[styles.statChip, { backgroundColor: colors.surface }, shadows.soft]}>
+            <Text style={[styles.statValue, { color: colors.primary }]}>${stats.avg}</Text>
+            <Text style={[styles.statLabel, { color: colors.outline }]}>{t.avgCost}</Text>
           </View>
         </View>
       )}
@@ -149,22 +153,24 @@ export default function MaintenanceHistoryScreen() {
             {recordsStatus === 'loading' ? (
               <ActivityIndicator color={colors.primary} />
             ) : (
-              <Text style={styles.emptyText}>No service records yet.</Text>
+              <Text style={[styles.emptyText, { color: colors.outline }]}>{t.noRecords}</Text>
             )}
           </View>
         }
         renderItem={({ item: r }) => (
-          <View style={styles.recordCard}>
+          <View style={[styles.recordCard, { backgroundColor: colors.surface }, shadows.soft]}>
             <View style={styles.recordRow}>
-              <Text style={styles.recordType}>{r.serviceType}</Text>
-              <Text style={styles.recordCost}>${r.cost.toFixed(2)}</Text>
+              <Text style={[styles.recordType, { color: colors.primary }]}>{r.serviceType}</Text>
+              <Text style={[styles.recordCost, { color: colors.secondary }]}>${r.cost.toFixed(2)}</Text>
             </View>
             <View style={styles.recordRow}>
-              <Text style={styles.recordMeta}>{r.serviceDate}</Text>
-              <Text style={styles.recordMeta}>{r.mileage.toLocaleString()} mi</Text>
+              <Text style={[styles.recordMeta, { color: colors.outline }]}>{r.serviceDate}</Text>
+              <Text style={[styles.recordMeta, { color: colors.outline }]}>
+                {r.mileage.toLocaleString()} {t.mi}
+              </Text>
             </View>
-            {!!r.notes && <Text style={styles.recordNotes}>{r.notes}</Text>}
-            <Text style={styles.deleteLink} onPress={() => handleDelete(r.id)}>
+            {!!r.notes && <Text style={[styles.recordNotes, { color: colors.text }]}>{r.notes}</Text>}
+            <Text style={[styles.deleteLink, { color: colors.error }]} onPress={() => handleDelete(r.id)}>
               {deletingId === r.id ? 'Removing...' : 'Delete'}
             </Text>
           </View>
@@ -173,17 +179,17 @@ export default function MaintenanceHistoryScreen() {
 
       <Modal visible={modalVisible} transparent animationType="slide" onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modalOverlay}>
-          <View style={styles.modalSheet}>
-            <Text style={styles.modalTitle}>Add Service Record</Text>
-            <CustomInput label="Service Type" placeholder="e.g. Oil Change" value={serviceType} onChangeText={setServiceType} />
-            <CustomInput label="Service Date" placeholder="YYYY-MM-DD" value={serviceDate} onChangeText={setServiceDate} />
-            <CustomInput label="Mileage" placeholder="e.g. 5000" value={mileage} onChangeText={setMileage} keyboardType="numeric" />
-            <CustomInput label="Cost ($)" placeholder="e.g. 50.00" value={cost} onChangeText={setCost} keyboardType="decimal-pad" />
-            <CustomInput label="Notes (Optional)" placeholder="Additional details..." value={notes} onChangeText={setNotes} />
-            {!!formError && <Text style={styles.error}>{formError}</Text>}
+          <View style={[styles.modalSheet, { backgroundColor: colors.surface }]}>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>{t.addServiceRecord}</Text>
+            <CustomInput label={t.serviceType} placeholder={t.serviceTypePh} value={serviceType} onChangeText={setServiceType} />
+            <CustomInput label={t.serviceDate} placeholder="YYYY-MM-DD" value={serviceDate} onChangeText={setServiceDate} />
+            <CustomInput label={t.mileage} placeholder="e.g. 5000" value={mileage} onChangeText={setMileage} keyboardType="numeric" />
+            <CustomInput label={t.cost} placeholder="e.g. 50.00" value={cost} onChangeText={setCost} keyboardType="decimal-pad" />
+            <CustomInput label={t.notes} placeholder={t.notesPh} value={notes} onChangeText={setNotes} />
+            {!!formError && <Text style={[styles.error, { color: colors.error }]}>{formError}</Text>}
             <View style={styles.modalActions}>
-              <CustomButton label="Cancel" onPress={() => setModalVisible(false)} variant="muted" style={{ flex: 1 }} disabled={saving} />
-              <CustomButton label="Save" onPress={handleSave} style={{ flex: 1 }} loading={saving} disabled={saving} />
+              <CustomButton label={t.cancel} onPress={() => setModalVisible(false)} variant="muted" style={{ flex: 1 }} disabled={saving} />
+              <CustomButton label={t.save} onPress={handleSave} style={{ flex: 1 }} loading={saving} disabled={saving} />
             </View>
           </View>
         </View>
@@ -193,7 +199,7 @@ export default function MaintenanceHistoryScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.background },
+  screen: { flex: 1 },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -202,27 +208,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
   },
-  back: { fontFamily: 'Inter_500Medium', fontSize: 16, color: colors.primary },
-  headerTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 20, color: colors.primary },
-  addBtn: { backgroundColor: colors.primary, borderRadius: 12, paddingVertical: 8, paddingHorizontal: 16 },
-  addBtnText: { fontFamily: 'Inter_700Bold', fontSize: 12, color: colors.white },
+  back: { fontFamily: 'Inter_500Medium', fontSize: 16 },
+  headerTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 20 },
+  addBtn: { borderRadius: 12, paddingVertical: 8, paddingHorizontal: 16 },
+  addBtnText: { fontFamily: 'Inter_700Bold', fontSize: 12 },
   statsRow: { flexDirection: 'row', gap: 12, paddingHorizontal: spacing.lg, paddingBottom: 20 },
-  statChip: { flex: 1, backgroundColor: colors.surface, borderRadius: 16, padding: 14, alignItems: 'center', ...shadows.soft },
-  statValue: { fontFamily: 'Manrope_700Bold', fontSize: 16, color: colors.primary },
-  statLabel: { fontFamily: 'Inter_400Regular', fontSize: 10, color: colors.outline, marginTop: 2 },
+  statChip: { flex: 1, borderRadius: 16, padding: 14, alignItems: 'center' },
+  statValue: { fontFamily: 'Manrope_700Bold', fontSize: 16 },
+  statLabel: { fontFamily: 'Inter_400Regular', fontSize: 10, marginTop: 2 },
   listContent: { paddingHorizontal: spacing.lg, paddingBottom: spacing.lg },
-  recordCard: { backgroundColor: colors.surface, padding: spacing.lg, borderRadius: roundness.xl, marginBottom: spacing.md, ...shadows.soft },
+  recordCard: { padding: spacing.lg, borderRadius: roundness.xl, marginBottom: spacing.md },
   recordRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.sm },
-  recordType: { fontFamily: 'Inter_700Bold', fontSize: 18, color: colors.primary },
-  recordCost: { fontFamily: 'Inter_400Regular', fontSize: 18, color: colors.secondary },
-  recordMeta: { fontFamily: 'Inter_400Regular', fontSize: 11, color: colors.outline },
-  recordNotes: { fontFamily: 'Inter_400Regular', fontSize: 14, color: colors.text, fontStyle: 'italic', marginTop: spacing.sm },
-  deleteLink: { fontFamily: 'Inter_600SemiBold', fontSize: 11, color: colors.error, textAlign: 'right', marginTop: spacing.sm },
+  recordType: { fontFamily: 'Inter_700Bold', fontSize: 18 },
+  recordCost: { fontFamily: 'Inter_400Regular', fontSize: 18 },
+  recordMeta: { fontFamily: 'Inter_400Regular', fontSize: 11 },
+  recordNotes: { fontFamily: 'Inter_400Regular', fontSize: 14, fontStyle: 'italic', marginTop: spacing.sm },
+  deleteLink: { fontFamily: 'Inter_600SemiBold', fontSize: 11, textAlign: 'right', marginTop: spacing.sm },
   emptyState: { padding: 100, alignItems: 'center' },
-  emptyText: { fontFamily: 'Inter_400Regular', fontSize: 14, color: colors.outline },
+  emptyText: { fontFamily: 'Inter_400Regular', fontSize: 14 },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  modalSheet: { backgroundColor: colors.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: spacing.lg, maxHeight: '85%' },
-  modalTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 24, color: colors.text, textAlign: 'center', marginBottom: spacing.xl },
-  error: { fontFamily: 'Inter_400Regular', fontSize: 11, color: colors.error, textAlign: 'center', marginBottom: spacing.md },
+  modalSheet: { borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: spacing.lg, maxHeight: '85%' },
+  modalTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 24, textAlign: 'center', marginBottom: spacing.xl },
+  error: { fontFamily: 'Inter_400Regular', fontSize: 11, textAlign: 'center', marginBottom: spacing.md },
   modalActions: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.md },
 });

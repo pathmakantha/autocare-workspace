@@ -1,6 +1,8 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, roundness, shadows, spacing } from '@/utils/theme';
+import { roundness, spacing } from '@/utils/theme';
+import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export type CardStatus = 'ok' | 'warning' | 'error';
 
@@ -26,21 +28,29 @@ export default function VehicleCard({
   mileage,
   onPress,
 }: Props) {
+  const { colors, shadows } = useTheme();
+  const t = useTranslation();
+
   return (
-    <Pressable onPress={onPress} style={styles.card}>
+    <Pressable
+      onPress={onPress}
+      style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }, shadows.soft]}
+    >
       <View style={styles.headerRow}>
         <View>
-          <Text style={styles.name}>{name}</Text>
-          <Text style={styles.reg}>{registrationNumber}</Text>
+          <Text style={[styles.name, { color: colors.text }]}>{name}</Text>
+          <Text style={[styles.reg, { color: colors.outline }]}>{registrationNumber}</Text>
         </View>
         <View style={[styles.badge, { backgroundColor: statusBg }]}>
           <Text style={[styles.badgeText, { color: statusColor }]}>{statusText}</Text>
         </View>
       </View>
-      <View style={styles.footerRow}>
-        <Text style={styles.brandModel}>{brandModel}</Text>
+      <View style={[styles.footerRow, { borderTopColor: colors.border }]}>
+        <Text style={[styles.brandModel, { color: colors.secondary }]}>{brandModel}</Text>
         {mileage != null ? (
-          <Text style={styles.mileage}>{mileage.toLocaleString()} mi</Text>
+          <Text style={[styles.mileage, { color: colors.outline }]}>
+            {mileage.toLocaleString()} {t.mi}
+          </Text>
         ) : null}
       </View>
     </Pressable>
@@ -49,13 +59,10 @@ export default function VehicleCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.surface,
     padding: spacing.lg,
     borderRadius: roundness.xl,
     borderWidth: 1,
-    borderColor: colors.surfaceLow,
     marginBottom: spacing.md,
-    ...shadows.soft,
   },
   headerRow: {
     flexDirection: 'row',
@@ -63,18 +70,17 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: spacing.md,
   },
-  name: { fontFamily: 'Manrope_600SemiBold', fontSize: 24, color: colors.text },
-  reg: { fontFamily: 'Inter_400Regular', fontSize: 14, color: colors.outline, letterSpacing: 1.2 },
+  name: { fontFamily: 'Manrope_600SemiBold', fontSize: 24 },
+  reg: { fontFamily: 'Inter_400Regular', fontSize: 14, letterSpacing: 1.2 },
   badge: { paddingVertical: 4, paddingHorizontal: 8, borderRadius: roundness.xl },
   badgeText: { fontFamily: 'Inter_700Bold', fontSize: 11, textTransform: 'uppercase' },
   footerRow: {
     borderTopWidth: 1,
-    borderTopColor: colors.surfaceLow,
     paddingTop: spacing.sm,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  brandModel: { fontFamily: 'Inter_500Medium', fontSize: 12, color: colors.secondary },
-  mileage: { fontFamily: 'Inter_400Regular', fontSize: 11, color: colors.outline },
+  brandModel: { fontFamily: 'Inter_500Medium', fontSize: 12 },
+  mileage: { fontFamily: 'Inter_400Regular', fontSize: 11 },
 });

@@ -7,6 +7,9 @@ import MainTabNavigator from './MainTabNavigator';
 import AddVehicleScreen from '@/screens/AddVehicleScreen';
 import MaintenanceHistoryScreen from '@/screens/MaintenanceHistoryScreen';
 import RemindersScreen from '@/screens/RemindersScreen';
+import EditProfileScreen from '@/screens/EditProfileScreen';
+import PermissionsScreen from '@/screens/PermissionsScreen';
+import SubscriptionScreen from '@/screens/SubscriptionScreen';
 import { useAppSelector } from '@/redux/hooks';
 import { RootStackParamList } from './types';
 
@@ -27,6 +30,9 @@ export default function AppNavigator() {
             <Stack.Screen name="AddVehicle" component={AddVehicleScreen} />
             <Stack.Screen name="Maintenance" component={MaintenanceHistoryScreen} />
             <Stack.Screen name="Reminders" component={RemindersScreen} />
+            <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+            <Stack.Screen name="Permissions" component={PermissionsScreen} />
+            <Stack.Screen name="Subscription" component={SubscriptionScreen} />
           </>
         )}
       </Stack.Navigator>

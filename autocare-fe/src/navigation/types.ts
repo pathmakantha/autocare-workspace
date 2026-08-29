@@ -5,6 +5,9 @@ export type RootStackParamList = {
   AddVehicle: { vehicleId?: string } | undefined;
   Maintenance: { vehicleId: string };
   Reminders: undefined;
+  EditProfile: undefined;
+  Permissions: undefined;
+  Subscription: undefined;
 };
 
 export type MainTabParamList = {

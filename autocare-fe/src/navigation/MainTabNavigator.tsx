@@ -4,12 +4,16 @@ import DashboardScreen from '@/screens/DashboardScreen';
 import VehicleListScreen from '@/screens/VehicleListScreen';
 import SettingsScreen from '@/screens/SettingsScreen';
 import { MainTabParamList } from './types';
-import { colors } from '@/utils/theme';
+import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from '@/hooks/useTranslation';
 import { DashboardIcon, SettingsIcon, VehiclesIcon } from '@/components/icons/TabIcons';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export default function MainTabNavigator() {
+  const { colors } = useTheme();
+  const t = useTranslation();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -23,17 +27,17 @@ export default function MainTabNavigator() {
       <Tab.Screen
         name="Dashboard"
         component={DashboardScreen}
-        options={{ tabBarIcon: ({ color, size }) => <DashboardIcon color={color} size={size} /> }}
+        options={{ tabBarLabel: t.dashboard, tabBarIcon: ({ color, size }) => <DashboardIcon color={color} size={size} /> }}
       />
       <Tab.Screen
         name="Vehicles"
         component={VehicleListScreen}
-        options={{ tabBarIcon: ({ color, size }) => <VehiclesIcon color={color} size={size} /> }}
+        options={{ tabBarLabel: t.vehicles, tabBarIcon: ({ color, size }) => <VehiclesIcon color={color} size={size} /> }}
       />
       <Tab.Screen
         name="Settings"
         component={SettingsScreen}
-        options={{ tabBarIcon: ({ color, size }) => <SettingsIcon color={color} size={size} /> }}
+        options={{ tabBarLabel: t.settings, tabBarIcon: ({ color, size }) => <SettingsIcon color={color} size={size} /> }}
       />
     </Tab.Navigator>
   );
