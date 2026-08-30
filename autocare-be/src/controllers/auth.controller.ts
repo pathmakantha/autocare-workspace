@@ -78,7 +78,8 @@ export async function googleAuth(req: Request, res: Response) {
   try {
     const auth = await getFirebaseAuth();
     decoded = await auth.verifyIdToken(idToken);
-  } catch {
+  } catch (err) {
+    console.error('Google sign-in token verification failed:', err);
     return res.status(401).json({ message: 'Invalid or expired Google sign-in token' });
   }
 
