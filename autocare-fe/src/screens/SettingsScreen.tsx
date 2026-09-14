@@ -5,20 +5,27 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { logout } from '@/redux/slices/authSlice';
-import { setLanguage, toggleSetting } from '@/redux/slices/settingsSlice';
+import { applyCountry, setCurrency, setDistanceUnit, setLanguage, toggleSetting } from '@/redux/slices/settingsSlice';
+import type { Currency, DistanceUnit } from '@/redux/slices/settingsSlice';
 import { clearVehicles } from '@/redux/slices/vehicleSlice';
 import { clearRecords } from '@/redux/slices/maintenanceSlice';
+import { clearFuelLogs } from '@/redux/slices/fuelSlice';
 import CustomButton from '@/components/CustomButton';
 import { roundness, spacing } from '@/utils/theme';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { LANG_LABELS, LANG_ORDER } from '@/i18n/translations';
+import { REGIONS, REGION_ORDER } from '@/utils/currency';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RootStackParamList } from '@/navigation/types';
+import { moderateScale } from 'react-native-size-matters';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 const PLAN_NAME_KEY = { free: 'planFree', pro: 'planPro', fleet: 'planFleet' } as const;
+const DISTANCE_UNITS: DistanceUnit[] = ['km', 'mi'];
+const CURRENCIES: Currency[] = ['LKR', 'INR', 'RUB', 'USD', 'EUR'];
 
 export default function SettingsScreen() {
   const navigation = useNavigation<Nav>();
@@ -36,6 +43,7 @@ export default function SettingsScreen() {
     dispatch(logout());
     dispatch(clearVehicles());
     dispatch(clearRecords());
+    dispatch(clearFuelLogs());
   };
 
   const displayName = user?.name || (isGuest ? t.guestUser : 'User');
@@ -108,7 +116,10 @@ export default function SettingsScreen() {
               <Text style={[styles.navRowChevron, { color: colors.outline }]}>›</Text>
             </View>
           </Pressable>
-          <Pressable style={styles.navRowLast} onPress={() => navigation.navigate('Subscription')}>
+          <Pressable
+            style={[styles.navRow, { borderBottomColor: colors.border }]}
+            onPress={() => navigation.navigate('Subscription')}
+          >
             <Text style={[styles.navRowLabel, { color: colors.text }]}>{t.subscription}</Text>
             <View style={styles.navRowRight}>
               <View style={[styles.planBadge, { backgroundColor: colors.primary + '20' }]}>
@@ -117,6 +128,84 @@ export default function SettingsScreen() {
               <Text style={[styles.navRowChevron, { color: colors.outline }]}>›</Text>
             </View>
           </Pressable>
+          <Pressable style={styles.navRowLast} onPress={() => navigation.navigate('Emergency')}>
+            <Text style={[styles.navRowLabel, { color: colors.text }]}>{t.emergencyContacts}</Text>
+            <View style={styles.navRowRight}>
+              <Text style={[styles.navRowMeta, { color: colors.outline }]}>{REGIONS[settings.region].label}</Text>
+              <Text style={[styles.navRowChevron, { color: colors.outline }]}>›</Text>
+            </View>
+          </Pressable>
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={[styles.sectionLabel, { color: colors.outline }]}>{t.unitsCurrency}</Text>
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          {/* Country first — it is what sets the two rows below, plus the emergency
+              numbers and which country-specific features appear at all. */}
+          <Text style={[styles.unitLabel, { color: colors.text }]}>{t.country}</Text>
+          <View style={styles.chipRow}>
+            {REGION_ORDER.map((code) => {
+              const active = settings.region === code;
+              const info = REGIONS[code];
+              return (
+                <Pressable
+                  key={code}
+                  onPress={() =>
+                    dispatch(
+                      applyCountry({ region: code, currency: info.currency, distanceUnit: info.distanceUnit })
+                    )
+                  }
+                  style={[
+                    styles.unitChip,
+                    { backgroundColor: active ? colors.primary : 'transparent', borderColor: active ? colors.primary : colors.outline },
+                  ]}
+                >
+                  <Text style={[styles.unitChipText, { color: active ? colors.onBrand : colors.outline }]}>
+                    {info.flag} {code === 'OTHER' ? t.countryOther : info.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          <Text style={[styles.unitLabel, { color: colors.text, marginTop: spacing.lg }]}>{t.distanceUnit}</Text>
+          <View style={styles.chipRow}>
+            {DISTANCE_UNITS.map((u) => {
+              const active = settings.distanceUnit === u;
+              return (
+                <Pressable
+                  key={u}
+                  onPress={() => dispatch(setDistanceUnit(u))}
+                  style={[
+                    styles.unitChip,
+                    { backgroundColor: active ? colors.primary : 'transparent', borderColor: active ? colors.primary : colors.outline },
+                  ]}
+                >
+                  <Text style={[styles.unitChipText, { color: active ? colors.onBrand : colors.outline }]}>{u === 'km' ? 'km' : t.mi}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          <Text style={[styles.unitLabel, { color: colors.text, marginTop: spacing.lg }]}>{t.currencyLabel}</Text>
+          <View style={styles.chipRow}>
+            {CURRENCIES.map((c) => {
+              const active = settings.currency === c;
+              return (
+                <Pressable
+                  key={c}
+                  onPress={() => dispatch(setCurrency(c))}
+                  style={[
+                    styles.unitChip,
+                    { backgroundColor: active ? colors.primary : 'transparent', borderColor: active ? colors.primary : colors.outline },
+                  ]}
+                >
+                  <Text style={[styles.unitChipText, { color: active ? colors.onBrand : colors.outline }]}>{c}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
         </View>
       </View>
 
@@ -204,33 +293,37 @@ export default function SettingsScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1 },
-  content: { paddingBottom: 40 },
-  title: { fontFamily: 'Manrope_600SemiBold', fontSize: 24, padding: spacing.lg },
+  content: { paddingBottom: moderateScale(40) },
+  title: { fontFamily: 'Manrope_600SemiBold', fontSize: RFValue(24), padding: spacing.lg },
   section: { paddingHorizontal: spacing.lg, marginBottom: spacing.xl },
-  sectionLabel: { fontFamily: 'Inter_700Bold', fontSize: 18, marginBottom: spacing.md },
+  sectionLabel: { fontFamily: 'Inter_700Bold', fontSize: RFValue(18), marginBottom: spacing.md },
   card: { padding: spacing.lg, borderRadius: roundness.xl, borderWidth: 1 },
-  profileRow: { flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 20 },
-  avatar: { width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  avatarText: { fontFamily: 'Manrope_700Bold', fontSize: 22, color: '#ffffff' },
-  profileTextWrap: { minWidth: 0, flex: 1 },
-  profileName: { fontFamily: 'Manrope_600SemiBold', fontSize: 22 },
-  profileEmail: { fontFamily: 'Inter_400Regular', fontSize: 13 },
+  profileRow: { flexDirection: 'row', alignItems: 'center', gap: moderateScale(16), marginBottom: moderateScale(20) },
+  avatar: { width: moderateScale(56), height: moderateScale(56), borderRadius: moderateScale(28), alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  avatarText: { fontFamily: 'Manrope_700Bold', fontSize: RFValue(22), color: '#ffffff' },
+  profileTextWrap: { minWidth: moderateScale(0), flex: 1 },
+  profileName: { fontFamily: 'Manrope_600SemiBold', fontSize: RFValue(22) },
+  profileEmail: { fontFamily: 'Inter_400Regular', fontSize: RFValue(13) },
   logoutRow: { flexDirection: 'row', gap: spacing.md },
   togglesCard: { borderRadius: roundness.xl, borderWidth: 1, paddingHorizontal: spacing.lg },
-  navRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 18, borderBottomWidth: 1, gap: 10 },
-  navRowLast: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 18, gap: 10 },
-  navRowLabel: { fontFamily: 'Inter_400Regular', fontSize: 14 },
-  navRowRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  navRowMeta: { fontFamily: 'Inter_400Regular', fontSize: 11 },
-  navRowChevron: { fontFamily: 'Inter_400Regular', fontSize: 16 },
-  planBadge: { paddingVertical: 3, paddingHorizontal: 9, borderRadius: 20 },
-  planBadgeText: { fontFamily: 'Inter_700Bold', fontSize: 10 },
-  langCard: { borderRadius: roundness.xl, borderWidth: 1, padding: spacing.lg, flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  langChip: { paddingVertical: 9, paddingHorizontal: 14, borderRadius: 20, borderWidth: 1 },
-  langChipText: { fontFamily: 'Inter_600SemiBold', fontSize: 12 },
-  toggleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: spacing.sm, gap: 10 },
-  toggleTextWrap: { flex: 1, minWidth: 0 },
-  toggleLabel: { fontFamily: 'Inter_400Regular', fontSize: 14 },
-  toggleDesc: { fontFamily: 'Inter_400Regular', fontSize: 11, marginTop: 2 },
-  version: { fontFamily: 'Inter_400Regular', fontSize: 11, textAlign: 'center', padding: 40 },
+  navRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: moderateScale(18), borderBottomWidth: 1, gap: moderateScale(10) },
+  navRowLast: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: moderateScale(18), gap: moderateScale(10) },
+  navRowLabel: { fontFamily: 'Inter_400Regular', fontSize: RFValue(14) },
+  navRowRight: { flexDirection: 'row', alignItems: 'center', gap: moderateScale(8) },
+  navRowMeta: { fontFamily: 'Inter_400Regular', fontSize: RFValue(11) },
+  navRowChevron: { fontFamily: 'Inter_400Regular', fontSize: RFValue(16) },
+  planBadge: { paddingVertical: moderateScale(3), paddingHorizontal: moderateScale(9), borderRadius: moderateScale(20) },
+  planBadgeText: { fontFamily: 'Inter_700Bold', fontSize: RFValue(10) },
+  langCard: { borderRadius: roundness.xl, borderWidth: 1, padding: spacing.lg, flexDirection: 'row', flexWrap: 'wrap', gap: moderateScale(8) },
+  langChip: { paddingVertical: moderateScale(9), paddingHorizontal: moderateScale(14), borderRadius: moderateScale(20), borderWidth: 1 },
+  langChipText: { fontFamily: 'Inter_600SemiBold', fontSize: RFValue(12) },
+  toggleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: spacing.sm, gap: moderateScale(10) },
+  toggleTextWrap: { flex: 1, minWidth: moderateScale(0) },
+  toggleLabel: { fontFamily: 'Inter_400Regular', fontSize: RFValue(14) },
+  toggleDesc: { fontFamily: 'Inter_400Regular', fontSize: RFValue(11), marginTop: moderateScale(2) },
+  version: { fontFamily: 'Inter_400Regular', fontSize: RFValue(11), textAlign: 'center', padding: moderateScale(40) },
+  unitLabel: { fontFamily: 'Inter_400Regular', fontSize: RFValue(12), marginBottom: moderateScale(10) },
+  chipRow: { flexDirection: 'row', gap: moderateScale(8), flexWrap: 'wrap' },
+  unitChip: { paddingVertical: moderateScale(9), paddingHorizontal: moderateScale(16), borderRadius: moderateScale(20), borderWidth: 1 },
+  unitChipText: { fontFamily: 'Inter_600SemiBold', fontSize: RFValue(12) },
 });

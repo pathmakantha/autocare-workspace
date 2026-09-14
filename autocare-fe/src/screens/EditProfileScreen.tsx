@@ -11,6 +11,8 @@ import { roundness, spacing } from '@/utils/theme';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { RootStackParamList } from '@/navigation/types';
+import { moderateScale } from 'react-native-size-matters';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'EditProfile'>;
 
@@ -74,7 +76,7 @@ export default function EditProfileScreen() {
           {t.back}
         </Text>
         <Text style={[styles.headerTitle, { color: colors.text }]}>{t.editProfile}</Text>
-        <View style={{ width: 40 }} />
+        <View style={{ width: moderateScale(40) }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
@@ -116,18 +118,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
   },
-  back: { fontFamily: 'Inter_500Medium', fontSize: 16 },
-  headerTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 20 },
-  content: { paddingHorizontal: spacing.lg, paddingBottom: 40 },
+  back: { fontFamily: 'Inter_500Medium', fontSize: RFValue(16) },
+  headerTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: RFValue(20) },
+  content: { paddingHorizontal: spacing.lg, paddingBottom: moderateScale(40) },
   avatarWrap: { alignItems: 'center', marginBottom: spacing.xl },
-  avatar: { width: 84, height: 84, borderRadius: 42, alignItems: 'center', justifyContent: 'center' },
-  avatarText: { fontFamily: 'Manrope_700Bold', fontSize: 32, color: '#ffffff' },
+  avatar: { width: moderateScale(84), height: moderateScale(84), borderRadius: moderateScale(42), alignItems: 'center', justifyContent: 'center' },
+  avatarText: { fontFamily: 'Manrope_700Bold', fontSize: RFValue(32), color: '#ffffff' },
   card: {
     padding: spacing.lg,
     borderRadius: roundness.xl,
     borderWidth: 1,
     marginBottom: spacing.lg,
   },
-  saved: { fontFamily: 'Inter_400Regular', fontSize: 12, textAlign: 'center', marginBottom: spacing.md },
-  error: { fontFamily: 'Inter_400Regular', fontSize: 11, textAlign: 'center', marginBottom: spacing.md },
+  saved: { fontFamily: 'Inter_400Regular', fontSize: RFValue(12), textAlign: 'center', marginBottom: spacing.md },
+  error: { fontFamily: 'Inter_400Regular', fontSize: RFValue(11), textAlign: 'center', marginBottom: spacing.md },
 });

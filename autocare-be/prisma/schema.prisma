@@ -18,7 +18,9 @@ model User {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  vehicles Vehicle[]
+  vehicles           Vehicle[]
+  documents          Document[]
+  passwordResetCodes PasswordResetCode[]
 }
 
 model Vehicle {
@@ -41,6 +43,7 @@ model Vehicle {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   maintenanceRecords MaintenanceRecord[]
+  documents          Document[]
 
   @@index([userId])
 }
@@ -58,4 +61,49 @@ model MaintenanceRecord {
   vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
 
   @@index([vehicleId])
+}
+
+// A photographed/uploaded document (insurance card, registration, etc.) for a vehicle.
+// fileData holds the image as a base64 data URI, stored directly in Postgres — this keeps
+// the feature working with zero extra infrastructure (no S3/Cloudinary account needed) and,
+// unlike saving to the API's local disk, survives fine on a serverless host like Vercel.
+// If storage cost or size becomes a problem later, swap fileData for a fileUrl pointing at
+// real object storage without changing the rest of the model.
+model Document {
+  id               String    @id @default(uuid())
+  type             String // INSURANCE | LICENSE | REGISTRATION | EMISSION | OTHER
+  fileData         String // base64 data URI of the captured/uploaded image
+  mimeType         String
+  extractedExpiry  DateTime? // filled in by the OCR step (currently a stub — see src/utils/ocr.ts)
+  extractedIssuer  String?
+  referenceNumber  String?
+  notes            String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@index([userId])
+}
+
+// A one-time, short-lived code emailed to a user who is resetting their password.
+// Only the bcrypt hash of the code is stored, so a database leak does not hand an
+// attacker working reset codes. Rows are deleted whenever a fresh code is issued.
+model PasswordResetCode {
+  id         String    @id @default(uuid())
+  codeHash   String
+  expiresAt  DateTime
+  attempts   Int       @default(0)
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

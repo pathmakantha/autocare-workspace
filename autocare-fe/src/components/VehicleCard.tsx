@@ -3,6 +3,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { roundness, spacing } from '@/utils/theme';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
+import { moderateScale } from 'react-native-size-matters';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 export type CardStatus = 'ok' | 'warning' | 'error';
 
@@ -70,10 +72,10 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: spacing.md,
   },
-  name: { fontFamily: 'Manrope_600SemiBold', fontSize: 24 },
-  reg: { fontFamily: 'Inter_400Regular', fontSize: 14, letterSpacing: 1.2 },
-  badge: { paddingVertical: 4, paddingHorizontal: 8, borderRadius: roundness.xl },
-  badgeText: { fontFamily: 'Inter_700Bold', fontSize: 11, textTransform: 'uppercase' },
+  name: { fontFamily: 'Manrope_600SemiBold', fontSize: RFValue(24) },
+  reg: { fontFamily: 'Inter_400Regular', fontSize: RFValue(14), letterSpacing: 1.2 },
+  badge: { paddingVertical: moderateScale(4), paddingHorizontal: moderateScale(8), borderRadius: roundness.xl },
+  badgeText: { fontFamily: 'Inter_700Bold', fontSize: RFValue(11), textTransform: 'uppercase' },
   footerRow: {
     borderTopWidth: 1,
     paddingTop: spacing.sm,
@@ -81,6 +83,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  brandModel: { fontFamily: 'Inter_500Medium', fontSize: 12 },
-  mileage: { fontFamily: 'Inter_400Regular', fontSize: 11 },
+  brandModel: { fontFamily: 'Inter_500Medium', fontSize: RFValue(12) },
+  mileage: { fontFamily: 'Inter_400Regular', fontSize: RFValue(11) },
 });

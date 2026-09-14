@@ -8,11 +8,15 @@ import VehicleCard from '@/components/VehicleCard';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { deleteVehicle, removeVehicleLocal } from '@/redux/slices/vehicleSlice';
 import { removeRecordsForVehicleLocal } from '@/redux/slices/maintenanceSlice';
+import { removeDocumentsForVehicleLocal } from '@/redux/slices/documentsSlice';
+import { removeFuelLogsForVehicle } from '@/redux/slices/fuelSlice';
 import { getVehicleStatus } from '@/utils/vehicleStatus';
 import { spacing } from '@/utils/theme';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { RootStackParamList } from '@/navigation/types';
+import { moderateScale } from 'react-native-size-matters';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -48,6 +52,8 @@ export default function VehicleListScreen() {
         await dispatch(deleteVehicle(id)).unwrap();
       }
       dispatch(removeRecordsForVehicleLocal(id));
+      dispatch(removeDocumentsForVehicleLocal(id));
+      dispatch(removeFuelLogsForVehicle(id));
     } catch {
       // leave the vehicle in place; user can retry
     } finally {
@@ -136,24 +142,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
   },
-  title: { fontFamily: 'Manrope_600SemiBold', fontSize: 24 },
-  addBtn: { borderRadius: 12, paddingVertical: 8, paddingHorizontal: 16 },
-  addBtnText: { fontFamily: 'Inter_700Bold', fontSize: 12 },
+  title: { fontFamily: 'Manrope_600SemiBold', fontSize: RFValue(24) },
+  addBtn: { borderRadius: moderateScale(12), paddingVertical: moderateScale(8), paddingHorizontal: moderateScale(16) },
+  addBtnText: { fontFamily: 'Inter_700Bold', fontSize: RFValue(12) },
   searchWrap: { paddingHorizontal: spacing.lg, paddingBottom: spacing.sm },
   listContent: { paddingHorizontal: spacing.lg, paddingBottom: spacing.lg },
   cardBlock: { marginBottom: spacing.lg },
   actionsRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    gap: 20,
-    marginTop: -8,
-    paddingRight: 8,
-    paddingTop: 8,
+    gap: moderateScale(20),
+    marginTop: moderateScale(-8),
+    paddingRight: moderateScale(8),
+    paddingTop: moderateScale(8),
   },
-  editLink: { fontFamily: 'Inter_600SemiBold', fontSize: 11 },
-  cancelLink: { fontFamily: 'Inter_600SemiBold', fontSize: 11 },
-  confirmLink: { fontFamily: 'Inter_700Bold', fontSize: 11 },
-  removeLink: { fontFamily: 'Inter_600SemiBold', fontSize: 11 },
-  emptyState: { padding: 100, alignItems: 'center' },
-  emptyText: { fontFamily: 'Inter_400Regular', fontSize: 14 },
+  editLink: { fontFamily: 'Inter_600SemiBold', fontSize: RFValue(11) },
+  cancelLink: { fontFamily: 'Inter_600SemiBold', fontSize: RFValue(11) },
+  confirmLink: { fontFamily: 'Inter_700Bold', fontSize: RFValue(11) },
+  removeLink: { fontFamily: 'Inter_600SemiBold', fontSize: RFValue(11) },
+  emptyState: { padding: moderateScale(100), alignItems: 'center' },
+  emptyText: { fontFamily: 'Inter_400Regular', fontSize: RFValue(14) },
 });

@@ -4,6 +4,7 @@ import { z } from 'zod';
 import prisma from '../prisma';
 import { signToken } from '../utils/jwt';
 import { getFirebaseAuth } from '../firebaseAdmin';
+import { toUserDto } from '../utils/userDto';
 
 const registerSchema = z.object({
   name: z.string().min(1),
@@ -25,10 +26,6 @@ const updateProfileSchema = z.object({
   email: z.string().email(),
   phone: z.string().optional(),
 });
-
-function toUserDto(user: { id: string; name: string; email: string; phone?: string | null }) {
-  return { id: user.id, name: user.name, email: user.email, phone: user.phone ?? '' };
-}
 
 export async function register(req: Request, res: Response) {
   const parsed = registerSchema.safeParse(req.body);

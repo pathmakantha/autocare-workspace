@@ -9,6 +9,8 @@ import { roundness, spacing } from '@/utils/theme';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { RootStackParamList } from '@/navigation/types';
+import { moderateScale } from 'react-native-size-matters';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'Reminders'>;
 
@@ -26,7 +28,7 @@ export default function RemindersScreen() {
           {t.back}
         </Text>
         <Text style={[styles.headerTitle, { color: colors.text }]}>{t.upcomingReminders}</Text>
-        <View style={{ width: 40 }} />
+        <View style={{ width: moderateScale(40) }} />
       </View>
 
       <Text style={[styles.subtitle, { color: colors.outline }]}>{t.remindersNote}</Text>
@@ -75,18 +77,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
   },
-  back: { fontFamily: 'Inter_500Medium', fontSize: 16 },
-  headerTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 20 },
-  subtitle: { fontFamily: 'Inter_400Regular', fontSize: 12, paddingHorizontal: spacing.lg, marginBottom: spacing.lg },
-  listContent: { paddingHorizontal: spacing.lg, paddingBottom: 40 },
-  row: { paddingVertical: 20, paddingHorizontal: spacing.lg, borderRadius: 20, marginBottom: 12 },
+  back: { fontFamily: 'Inter_500Medium', fontSize: RFValue(16) },
+  headerTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: RFValue(20) },
+  subtitle: { fontFamily: 'Inter_400Regular', fontSize: RFValue(12), paddingHorizontal: spacing.lg, marginBottom: spacing.lg },
+  listContent: { paddingHorizontal: spacing.lg, paddingBottom: moderateScale(40) },
+  row: { paddingVertical: moderateScale(20), paddingHorizontal: spacing.lg, borderRadius: moderateScale(20), marginBottom: moderateScale(12) },
   rowTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.sm },
-  vehicleName: { fontFamily: 'Inter_700Bold', fontSize: 14 },
-  pill: { paddingVertical: 4, paddingHorizontal: 10, borderRadius: roundness.xl },
-  pillText: { fontFamily: 'Inter_700Bold', fontSize: 11 },
+  vehicleName: { fontFamily: 'Inter_700Bold', fontSize: RFValue(14) },
+  pill: { paddingVertical: moderateScale(4), paddingHorizontal: moderateScale(10), borderRadius: roundness.xl },
+  pillText: { fontFamily: 'Inter_700Bold', fontSize: RFValue(11) },
   rowBottom: { flexDirection: 'row', justifyContent: 'space-between' },
-  fieldLabel: { fontFamily: 'Inter_400Regular', fontSize: 14 },
-  date: { fontFamily: 'Inter_400Regular', fontSize: 11 },
-  emptyState: { padding: 80, alignItems: 'center' },
-  emptyText: { fontFamily: 'Inter_400Regular', fontSize: 14 },
+  fieldLabel: { fontFamily: 'Inter_400Regular', fontSize: RFValue(14) },
+  date: { fontFamily: 'Inter_400Regular', fontSize: RFValue(11) },
+  emptyState: { padding: moderateScale(80), alignItems: 'center' },
+  emptyText: { fontFamily: 'Inter_400Regular', fontSize: RFValue(14) },
 });

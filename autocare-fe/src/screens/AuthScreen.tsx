@@ -16,9 +16,17 @@ import apiClient from '@/api/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GUEST_DATA_STORAGE_KEY } from '@/redux/store';
 import { useGoogleAuth } from '@/hooks/useGoogleAuth';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { moderateScale } from 'react-native-size-matters';
+import { RootStackParamList } from '@/navigation/types';
+
+type Nav = NativeStackNavigationProp<RootStackParamList, 'Auth'>;
 
 export default function AuthScreen() {
   const dispatch = useAppDispatch();
+  const navigation = useNavigation<Nav>();
   const { colors, shadows } = useTheme();
   const t = useTranslation();
   const language = useAppSelector((s) => s.settings.language);
@@ -144,6 +152,15 @@ export default function AuthScreen() {
           style={{ marginTop: spacing.xs }}
         />
 
+        {isLogin && (
+          <Text
+            style={[styles.forgotLink, { color: colors.primary }]}
+            onPress={() => navigation.navigate('ForgotPassword')}
+          >
+            {t.forgotPassword}
+          </Text>
+        )}
+
         <Text style={[styles.divider, { color: colors.text }]}>{t.or}</Text>
 
         <CustomButton
@@ -180,27 +197,27 @@ export default function AuthScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
-  container: { paddingTop: spacing.xl, paddingHorizontal: spacing.lg, paddingBottom: 40 },
+  container: { paddingTop: spacing.xl, paddingHorizontal: spacing.lg, paddingBottom: moderateScale(40) },
   brandBlock: { alignItems: 'center', marginBottom: spacing.lg },
-  brand: { fontFamily: 'Manrope_800ExtraBold', fontSize: 40, color: '#ffffff', marginBottom: 4 },
+  brand: { fontFamily: 'Manrope_800ExtraBold', fontSize: RFValue(40), color: '#ffffff', marginBottom: moderateScale(4) },
   brandSub: {
     fontFamily: 'Inter_400Regular',
-    fontSize: 13,
+    fontSize: RFValue(13),
     color: '#ffffff',
     opacity: 0.7,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
     textAlign: 'center',
   },
-  langRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, justifyContent: 'center', marginBottom: spacing.lg },
+  langRow: { flexDirection: 'row', flexWrap: 'wrap', gap: moderateScale(6), justifyContent: 'center', marginBottom: spacing.lg },
   langChip: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 20,
+    paddingVertical: moderateScale(6),
+    paddingHorizontal: moderateScale(12),
+    borderRadius: moderateScale(20),
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.25)',
   },
-  langChipText: { fontFamily: 'Inter_600SemiBold', fontSize: 11 },
+  langChipText: { fontFamily: 'Inter_600SemiBold', fontSize: RFValue(11) },
   card: {
     padding: spacing.lg,
     borderRadius: roundness.xl,
@@ -208,41 +225,47 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontFamily: 'Manrope_700Bold',
-    fontSize: 24,
+    fontSize: RFValue(24),
     textAlign: 'center',
     marginBottom: spacing.lg,
   },
-  error: { fontFamily: 'Inter_400Regular', fontSize: 11, textAlign: 'center', marginBottom: spacing.sm },
+  error: { fontFamily: 'Inter_400Regular', fontSize: RFValue(11), textAlign: 'center', marginBottom: spacing.sm },
   divider: {
     fontFamily: 'Inter_400Regular',
-    fontSize: 11,
+    fontSize: RFValue(11),
     opacity: 0.5,
     textAlign: 'center',
     marginVertical: spacing.md,
   },
   googleNote: {
     fontFamily: 'Inter_400Regular',
-    fontSize: 11,
+    fontSize: RFValue(11),
     opacity: 0.6,
     textAlign: 'center',
     marginTop: spacing.sm,
-    lineHeight: 16,
+    lineHeight: RFValue(16),
   },
-  switchText: {
+  forgotLink: {
     fontFamily: 'Inter_500Medium',
-    fontSize: 12,
+    fontSize: RFValue(12),
     textAlign: 'center',
     marginTop: spacing.md,
   },
-  guestBlock: { alignItems: 'center', marginTop: spacing.xl, paddingBottom: 40 },
-  or: { fontFamily: 'Inter_400Regular', fontSize: 11, color: '#ffffff', opacity: 0.6, marginBottom: spacing.md },
+  switchText: {
+    fontFamily: 'Inter_500Medium',
+    fontSize: RFValue(12),
+    textAlign: 'center',
+    marginTop: spacing.md,
+  },
+  guestBlock: { alignItems: 'center', marginTop: spacing.xl, paddingBottom: moderateScale(40) },
+  or: { fontFamily: 'Inter_400Regular', fontSize: RFValue(11), color: '#ffffff', opacity: 0.6, marginBottom: spacing.md },
   guestNote: {
     fontFamily: 'Inter_400Regular',
-    fontSize: 11,
+    fontSize: RFValue(11),
     color: '#ffffff',
     opacity: 0.7,
     textAlign: 'center',
     marginTop: spacing.md,
-    lineHeight: 18,
+    lineHeight: RFValue(18),
   },
 });

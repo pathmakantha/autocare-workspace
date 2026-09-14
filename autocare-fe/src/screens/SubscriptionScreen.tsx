@@ -9,6 +9,8 @@ import { roundness, spacing } from '@/utils/theme';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { RootStackParamList } from '@/navigation/types';
+import { moderateScale } from 'react-native-size-matters';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'Subscription'>;
 
@@ -45,7 +47,7 @@ export default function SubscriptionScreen() {
           {t.back}
         </Text>
         <Text style={[styles.headerTitle, { color: colors.text }]}>{t.subscription}</Text>
-        <View style={{ width: 40 }} />
+        <View style={{ width: moderateScale(40) }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
@@ -104,24 +106,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
   },
-  back: { fontFamily: 'Inter_500Medium', fontSize: 16 },
-  headerTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 20 },
-  content: { paddingHorizontal: spacing.lg, paddingBottom: 40 },
+  back: { fontFamily: 'Inter_500Medium', fontSize: RFValue(16) },
+  headerTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: RFValue(20) },
+  content: { paddingHorizontal: spacing.lg, paddingBottom: moderateScale(40) },
   currentCard: { borderRadius: roundness.xl, padding: spacing.lg, marginBottom: spacing.xl },
-  currentLabel: { fontFamily: 'Inter_400Regular', fontSize: 11, color: '#ffffff', opacity: 0.7, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 },
-  currentName: { fontFamily: 'Manrope_700Bold', fontSize: 28, color: '#ffffff' },
-  currentDesc: { fontFamily: 'Inter_400Regular', fontSize: 12, color: '#ffffff', opacity: 0.8, marginTop: 6, lineHeight: 18 },
-  usage: { fontFamily: 'Inter_400Regular', fontSize: 11, color: '#ffffff', opacity: 0.6, marginTop: 12 },
-  planCard: { borderRadius: roundness.lg, padding: spacing.md, marginBottom: 14, borderWidth: 2 },
-  planRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 },
-  planLeft: { flex: 1, minWidth: 0 },
-  planNameRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  planName: { fontFamily: 'Manrope_700Bold', fontSize: 19 },
-  planDesc: { fontFamily: 'Inter_400Regular', fontSize: 12, marginTop: 6, lineHeight: 17 },
-  badge: { paddingVertical: 2, paddingHorizontal: 8, borderRadius: 20 },
-  badgeText: { fontFamily: 'Inter_700Bold', fontSize: 9, letterSpacing: 0.5 },
+  currentLabel: { fontFamily: 'Inter_400Regular', fontSize: RFValue(11), color: '#ffffff', opacity: 0.7, textTransform: 'uppercase', letterSpacing: 1, marginBottom: moderateScale(6) },
+  currentName: { fontFamily: 'Manrope_700Bold', fontSize: RFValue(28), color: '#ffffff' },
+  currentDesc: { fontFamily: 'Inter_400Regular', fontSize: RFValue(12), color: '#ffffff', opacity: 0.8, marginTop: moderateScale(6), lineHeight: RFValue(18) },
+  usage: { fontFamily: 'Inter_400Regular', fontSize: RFValue(11), color: '#ffffff', opacity: 0.6, marginTop: moderateScale(12) },
+  planCard: { borderRadius: roundness.lg, padding: spacing.md, marginBottom: moderateScale(14), borderWidth: 2 },
+  planRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: moderateScale(10) },
+  planLeft: { flex: 1, minWidth: moderateScale(0) },
+  planNameRow: { flexDirection: 'row', alignItems: 'center', gap: moderateScale(8) },
+  planName: { fontFamily: 'Manrope_700Bold', fontSize: RFValue(19) },
+  planDesc: { fontFamily: 'Inter_400Regular', fontSize: RFValue(12), marginTop: moderateScale(6), lineHeight: RFValue(17) },
+  badge: { paddingVertical: moderateScale(2), paddingHorizontal: moderateScale(8), borderRadius: moderateScale(20) },
+  badgeText: { fontFamily: 'Inter_700Bold', fontSize: RFValue(9), letterSpacing: 0.5 },
   planRight: { alignItems: 'flex-end', flexShrink: 0 },
-  planPrice: { fontFamily: 'Manrope_700Bold', fontSize: 18 },
-  planPriceNote: { fontFamily: 'Inter_400Regular', fontSize: 10 },
-  changed: { fontFamily: 'Inter_400Regular', fontSize: 12, textAlign: 'center', marginTop: 12 },
+  planPrice: { fontFamily: 'Manrope_700Bold', fontSize: RFValue(18) },
+  planPriceNote: { fontFamily: 'Inter_400Regular', fontSize: RFValue(10) },
+  changed: { fontFamily: 'Inter_400Regular', fontSize: RFValue(12), textAlign: 'center', marginTop: moderateScale(12) },
 });

@@ -6,10 +6,14 @@ import { continueAsGuest, loginSuccess, setScreen, updateProfileLocal } from '@/
 import { hydrateSettings } from '@/redux/slices/settingsSlice';
 import { setVehicles, fetchVehicles } from '@/redux/slices/vehicleSlice';
 import { setRecords } from '@/redux/slices/maintenanceSlice';
+import { setDocuments } from '@/redux/slices/documentsSlice';
+import { setFuelLogs } from '@/redux/slices/fuelSlice';
 import apiClient from '@/api/client';
-import { GUEST_DATA_STORAGE_KEY, SETTINGS_STORAGE_KEY } from '@/redux/store';
+import { FUEL_STORAGE_KEY, GUEST_DATA_STORAGE_KEY, SETTINGS_STORAGE_KEY } from '@/redux/store';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
+import { moderateScale } from 'react-native-size-matters';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 export default function SplashScreen() {
   const dispatch = useAppDispatch();
@@ -25,6 +29,13 @@ export default function SplashScreen() {
         if (settingsRaw) dispatch(hydrateSettings(JSON.parse(settingsRaw)));
       } catch {
         // corrupt/missing settings cache — fall back to defaults
+      }
+
+      try {
+        const fuelRaw = await AsyncStorage.getItem(FUEL_STORAGE_KEY);
+        if (fuelRaw) dispatch(setFuelLogs(JSON.parse(fuelRaw)));
+      } catch {
+        // corrupt/missing fuel cache — fall back to empty
       }
 
       const token = await AsyncStorage.getItem('authToken');
@@ -44,12 +55,13 @@ export default function SplashScreen() {
       try {
         const guestRaw = await AsyncStorage.getItem(GUEST_DATA_STORAGE_KEY);
         if (guestRaw) {
-          const { vehicles, records, profile } = JSON.parse(guestRaw);
+          const { vehicles, records, documents, profile } = JSON.parse(guestRaw);
           if (cancelled) return;
           dispatch(continueAsGuest());
           if (profile) dispatch(updateProfileLocal(profile));
           dispatch(setVehicles(vehicles || []));
           dispatch(setRecords(records || []));
+          dispatch(setDocuments(documents || []));
           return;
         }
       } catch {
@@ -90,34 +102,34 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logoCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: moderateScale(100),
+    height: moderateScale(100),
+    borderRadius: moderateScale(50),
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 24,
+    marginBottom: moderateScale(24),
   },
-  logoText: { fontFamily: 'Manrope_800ExtraBold', fontSize: 48 },
+  logoText: { fontFamily: 'Manrope_800ExtraBold', fontSize: RFValue(48) },
   title: {
     fontFamily: 'Manrope_800ExtraBold',
-    fontSize: 36,
+    fontSize: RFValue(36),
     color: '#ffffff',
     letterSpacing: 2,
   },
   subtitle: {
     fontFamily: 'Inter_400Regular',
-    fontSize: 14,
+    fontSize: RFValue(14),
     color: '#ffffff',
     opacity: 0.7,
-    marginTop: 8,
+    marginTop: moderateScale(8),
     letterSpacing: 1,
     textAlign: 'center',
-    paddingHorizontal: 32,
+    paddingHorizontal: moderateScale(32),
   },
-  footer: { position: 'absolute', bottom: 50 },
+  footer: { position: 'absolute', bottom: moderateScale(50) },
   footerText: {
     fontFamily: 'Inter_400Regular',
-    fontSize: 11,
+    fontSize: RFValue(11),
     color: '#ffffff',
     opacity: 0.5,
     textTransform: 'uppercase',

@@ -2,11 +2,12 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import DashboardScreen from '@/screens/DashboardScreen';
 import VehicleListScreen from '@/screens/VehicleListScreen';
+import FuelPassScreen from '@/screens/FuelPassScreen';
 import SettingsScreen from '@/screens/SettingsScreen';
 import { MainTabParamList } from './types';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
-import { DashboardIcon, SettingsIcon, VehiclesIcon } from '@/components/icons/TabIcons';
+import { DashboardIcon, FuelIcon, SettingsIcon, VehiclesIcon } from '@/components/icons/TabIcons';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -33,6 +34,11 @@ export default function MainTabNavigator() {
         name="Vehicles"
         component={VehicleListScreen}
         options={{ tabBarLabel: t.vehicles, tabBarIcon: ({ color, size }) => <VehiclesIcon color={color} size={size} /> }}
+      />
+      <Tab.Screen
+        name="Fuel"
+        component={FuelPassScreen}
+        options={{ tabBarLabel: t.fuel, tabBarIcon: ({ color, size }) => <FuelIcon color={color} size={size} /> }}
       />
       <Tab.Screen
         name="Settings"

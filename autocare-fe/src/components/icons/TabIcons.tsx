@@ -33,6 +33,17 @@ export function VehiclesIcon({ color, size = 22 }: IconProps) {
   );
 }
 
+export function FuelIcon({ color, size = 22 }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M6 21V5.5A1.5 1.5 0 0 1 7.5 4h5A1.5 1.5 0 0 1 14 5.5V21" stroke={color} strokeWidth={STROKE_WIDTH} strokeLinecap="round" strokeLinejoin="round" />
+      <Path d="M4.5 21h11" stroke={color} strokeWidth={STROKE_WIDTH} strokeLinecap="round" />
+      <Path d="M6 11h8" stroke={color} strokeWidth={STROKE_WIDTH} strokeLinecap="round" />
+      <Path d="M14 8h2.8a1.7 1.7 0 0 1 1.7 1.7v6.6a1.6 1.6 0 0 0 3.2 0V12l-2-3" stroke={color} strokeWidth={STROKE_WIDTH} strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
 export function SettingsIcon({ color, size = 22 }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">

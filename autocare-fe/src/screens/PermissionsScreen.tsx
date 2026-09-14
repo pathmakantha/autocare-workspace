@@ -9,6 +9,8 @@ import { roundness, spacing } from '@/utils/theme';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { RootStackParamList } from '@/navigation/types';
+import { moderateScale } from 'react-native-size-matters';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'Permissions'>;
 
@@ -33,7 +35,7 @@ export default function PermissionsScreen() {
           {t.back}
         </Text>
         <Text style={[styles.headerTitle, { color: colors.text }]}>{t.appPermissions}</Text>
-        <View style={{ width: 40 }} />
+        <View style={{ width: moderateScale(40) }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
@@ -79,26 +81,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
   },
-  back: { fontFamily: 'Inter_500Medium', fontSize: 16 },
-  headerTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 20 },
-  content: { paddingHorizontal: spacing.lg, paddingBottom: 40 },
-  note: { fontFamily: 'Inter_400Regular', fontSize: 12, lineHeight: 18, marginBottom: spacing.lg },
+  back: { fontFamily: 'Inter_500Medium', fontSize: RFValue(16) },
+  headerTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: RFValue(20) },
+  content: { paddingHorizontal: spacing.lg, paddingBottom: moderateScale(40) },
+  note: { fontFamily: 'Inter_400Regular', fontSize: RFValue(12), lineHeight: RFValue(18), marginBottom: spacing.lg },
   card: { borderRadius: roundness.xl, borderWidth: 1, paddingHorizontal: spacing.lg },
-  row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 18, gap: 12 },
-  rowText: { flex: 1, minWidth: 0 },
-  label: { fontFamily: 'Inter_500Medium', fontSize: 14 },
-  desc: { fontFamily: 'Inter_400Regular', fontSize: 11, marginTop: 2 },
-  state: { fontFamily: 'Inter_700Bold', fontSize: 10, marginTop: 5, textTransform: 'uppercase', letterSpacing: 0.5 },
-  toggle: { width: 44, height: 26, borderRadius: 13, flexShrink: 0 },
+  row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: moderateScale(18), gap: moderateScale(12) },
+  rowText: { flex: 1, minWidth: moderateScale(0) },
+  label: { fontFamily: 'Inter_500Medium', fontSize: RFValue(14) },
+  desc: { fontFamily: 'Inter_400Regular', fontSize: RFValue(11), marginTop: moderateScale(2) },
+  state: { fontFamily: 'Inter_700Bold', fontSize: RFValue(10), marginTop: moderateScale(5), textTransform: 'uppercase', letterSpacing: 0.5 },
+  toggle: { width: moderateScale(44), height: moderateScale(26), borderRadius: moderateScale(13), flexShrink: 0 },
   knob: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    width: moderateScale(22),
+    height: moderateScale(22),
+    borderRadius: moderateScale(11),
     backgroundColor: '#ffffff',
     position: 'absolute',
-    top: 2,
+    top: moderateScale(2),
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: moderateScale(0), height: moderateScale(1) },
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 2,
