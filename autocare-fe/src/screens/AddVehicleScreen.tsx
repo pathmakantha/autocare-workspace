@@ -13,6 +13,8 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { RootStackParamList } from '@/navigation/types';
 import { VehicleFormData, VehiclePayload } from '@/types/vehicle';
 import { generateLocalId } from '@/utils/localId';
+import { moderateScale } from 'react-native-size-matters';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'AddVehicle'>;
 type R = RouteProp<RootStackParamList, 'AddVehicle'>;
@@ -125,7 +127,7 @@ export default function AddVehicleScreen() {
         <Text style={[styles.headerTitle, { color: colors.text }]}>
           {editingVehicleId ? t.editVehicleT : t.addVehicleT}
         </Text>
-        <View style={{ width: 40 }} />
+        <View style={{ width: moderateScale(40) }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
@@ -180,16 +182,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
   },
-  back: { fontFamily: 'Inter_500Medium', fontSize: 16 },
-  headerTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 20 },
-  content: { paddingHorizontal: spacing.lg, paddingBottom: 40 },
+  back: { fontFamily: 'Inter_500Medium', fontSize: RFValue(16) },
+  headerTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: RFValue(20) },
+  content: { paddingHorizontal: spacing.lg, paddingBottom: moderateScale(40) },
   card: {
     padding: spacing.lg,
     borderRadius: roundness.xl,
     borderWidth: 1,
     marginBottom: spacing.xl,
   },
-  cardTitle: { fontFamily: 'Inter_700Bold', fontSize: 18, marginBottom: spacing.md },
-  row: { flexDirection: 'row', gap: 10 },
-  error: { fontFamily: 'Inter_400Regular', fontSize: 11, textAlign: 'center', marginBottom: spacing.md },
+  cardTitle: { fontFamily: 'Inter_700Bold', fontSize: RFValue(18), marginBottom: spacing.md },
+  row: { flexDirection: 'row', gap: moderateScale(10) },
+  error: { fontFamily: 'Inter_400Regular', fontSize: RFValue(11), textAlign: 'center', marginBottom: spacing.md },
 });

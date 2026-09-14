@@ -3,6 +3,9 @@
 // Colors are theme-aware (light/dark) — use the useTheme() hook to read the
 // active palette rather than importing a static `colors` object.
 
+import { moderateScale } from 'react-native-size-matters';
+import { RFValue } from 'react-native-responsive-fontsize';
+
 export interface ThemeColors {
   primary: string;
   primaryBtn: string;
@@ -66,19 +69,21 @@ export const darkColors: ThemeColors = {
   onBrand: '#ffffff',
 };
 
+// Scaled once here so every screen that uses these tokens is responsive without
+// having to wrap each value at the call site.
 export const spacing = {
-  xs: 4,
-  sm: 8,
-  md: 16,
-  lg: 24,
-  xl: 32,
+  xs: moderateScale(4),
+  sm: moderateScale(8),
+  md: moderateScale(16),
+  lg: moderateScale(24),
+  xl: moderateScale(32),
 };
 
 export const roundness = {
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 24,
+  sm: moderateScale(8),
+  md: moderateScale(12),
+  lg: moderateScale(16),
+  xl: moderateScale(24),
 };
 
 export function shadowsFor(dark: boolean) {
@@ -94,9 +99,9 @@ export function shadowsFor(dark: boolean) {
 }
 
 export const typography = {
-  headline: { fontFamily: 'Manrope_700Bold', fontSize: 28 },
-  title: { fontFamily: 'Manrope_600SemiBold', fontSize: 20 },
-  body: { fontFamily: 'Inter_400Regular', fontSize: 14 },
-  label: { fontFamily: 'Inter_500Medium', fontSize: 12 },
-  caption: { fontFamily: 'Inter_400Regular', fontSize: 11 },
+  headline: { fontFamily: 'Manrope_700Bold', fontSize: RFValue(28) },
+  title: { fontFamily: 'Manrope_600SemiBold', fontSize: RFValue(20) },
+  body: { fontFamily: 'Inter_400Regular', fontSize: RFValue(14) },
+  label: { fontFamily: 'Inter_500Medium', fontSize: RFValue(12) },
+  caption: { fontFamily: 'Inter_400Regular', fontSize: RFValue(11) },
 };

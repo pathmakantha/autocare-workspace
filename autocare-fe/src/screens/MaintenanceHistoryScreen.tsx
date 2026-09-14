@@ -12,6 +12,8 @@ import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { RootStackParamList } from '@/navigation/types';
 import { generateLocalId } from '@/utils/localId';
+import { moderateScale } from 'react-native-size-matters';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'Maintenance'>;
 type R = RouteProp<RootStackParamList, 'Maintenance'>;
@@ -127,6 +129,13 @@ export default function MaintenanceHistoryScreen() {
         </Pressable>
       </View>
 
+      <Pressable
+        style={styles.docsLink}
+        onPress={() => navigation.navigate('Documents', { vehicleId })}
+      >
+        <Text style={[styles.docsLinkText, { color: colors.secondary }]}>{t.documents} ›</Text>
+      </Pressable>
+
       {stats && (
         <View style={styles.statsRow}>
           <View style={[styles.statChip, { backgroundColor: colors.surface }, shadows.soft]}>
@@ -208,27 +217,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
   },
-  back: { fontFamily: 'Inter_500Medium', fontSize: 16 },
-  headerTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 20 },
-  addBtn: { borderRadius: 12, paddingVertical: 8, paddingHorizontal: 16 },
-  addBtnText: { fontFamily: 'Inter_700Bold', fontSize: 12 },
-  statsRow: { flexDirection: 'row', gap: 12, paddingHorizontal: spacing.lg, paddingBottom: 20 },
-  statChip: { flex: 1, borderRadius: 16, padding: 14, alignItems: 'center' },
-  statValue: { fontFamily: 'Manrope_700Bold', fontSize: 16 },
-  statLabel: { fontFamily: 'Inter_400Regular', fontSize: 10, marginTop: 2 },
+  back: { fontFamily: 'Inter_500Medium', fontSize: RFValue(16) },
+  headerTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: RFValue(20) },
+  addBtn: { borderRadius: moderateScale(12), paddingVertical: moderateScale(8), paddingHorizontal: moderateScale(16) },
+  addBtnText: { fontFamily: 'Inter_700Bold', fontSize: RFValue(12) },
+  docsLink: { paddingHorizontal: spacing.lg, paddingBottom: spacing.md, marginTop: moderateScale(-12) },
+  docsLinkText: { fontFamily: 'Inter_600SemiBold', fontSize: RFValue(13) },
+  statsRow: { flexDirection: 'row', gap: moderateScale(12), paddingHorizontal: spacing.lg, paddingBottom: moderateScale(20) },
+  statChip: { flex: 1, borderRadius: moderateScale(16), padding: moderateScale(14), alignItems: 'center' },
+  statValue: { fontFamily: 'Manrope_700Bold', fontSize: RFValue(16) },
+  statLabel: { fontFamily: 'Inter_400Regular', fontSize: RFValue(10), marginTop: moderateScale(2) },
   listContent: { paddingHorizontal: spacing.lg, paddingBottom: spacing.lg },
   recordCard: { padding: spacing.lg, borderRadius: roundness.xl, marginBottom: spacing.md },
   recordRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.sm },
-  recordType: { fontFamily: 'Inter_700Bold', fontSize: 18 },
-  recordCost: { fontFamily: 'Inter_400Regular', fontSize: 18 },
-  recordMeta: { fontFamily: 'Inter_400Regular', fontSize: 11 },
-  recordNotes: { fontFamily: 'Inter_400Regular', fontSize: 14, fontStyle: 'italic', marginTop: spacing.sm },
-  deleteLink: { fontFamily: 'Inter_600SemiBold', fontSize: 11, textAlign: 'right', marginTop: spacing.sm },
-  emptyState: { padding: 100, alignItems: 'center' },
-  emptyText: { fontFamily: 'Inter_400Regular', fontSize: 14 },
+  recordType: { fontFamily: 'Inter_700Bold', fontSize: RFValue(18) },
+  recordCost: { fontFamily: 'Inter_400Regular', fontSize: RFValue(18) },
+  recordMeta: { fontFamily: 'Inter_400Regular', fontSize: RFValue(11) },
+  recordNotes: { fontFamily: 'Inter_400Regular', fontSize: RFValue(14), fontStyle: 'italic', marginTop: spacing.sm },
+  deleteLink: { fontFamily: 'Inter_600SemiBold', fontSize: RFValue(11), textAlign: 'right', marginTop: spacing.sm },
+  emptyState: { padding: moderateScale(100), alignItems: 'center' },
+  emptyText: { fontFamily: 'Inter_400Regular', fontSize: RFValue(14) },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  modalSheet: { borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: spacing.lg, maxHeight: '85%' },
-  modalTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: 24, textAlign: 'center', marginBottom: spacing.xl },
-  error: { fontFamily: 'Inter_400Regular', fontSize: 11, textAlign: 'center', marginBottom: spacing.md },
+  modalSheet: { borderTopLeftRadius: moderateScale(24), borderTopRightRadius: moderateScale(24), padding: spacing.lg, maxHeight: '85%' },
+  modalTitle: { fontFamily: 'Manrope_600SemiBold', fontSize: RFValue(24), textAlign: 'center', marginBottom: spacing.xl },
+  error: { fontFamily: 'Inter_400Regular', fontSize: RFValue(11), textAlign: 'center', marginBottom: spacing.md },
   modalActions: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.md },
 });

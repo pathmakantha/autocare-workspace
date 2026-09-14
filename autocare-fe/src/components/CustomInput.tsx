@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
 import { roundness, spacing } from '@/utils/theme';
 import { useTheme } from '@/hooks/useTheme';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 interface Props extends TextInputProps {
   label?: string;
@@ -25,14 +26,14 @@ const styles = StyleSheet.create({
   wrapper: { marginBottom: spacing.md },
   label: {
     fontFamily: 'Inter_500Medium',
-    fontSize: 12,
+    fontSize: RFValue(12),
     marginBottom: spacing.xs,
     marginLeft: spacing.xs,
   },
   input: {
     width: '100%',
     fontFamily: 'Inter_400Regular',
-    fontSize: 14,
+    fontSize: RFValue(14),
     borderRadius: roundness.md,
     padding: spacing.md,
   },

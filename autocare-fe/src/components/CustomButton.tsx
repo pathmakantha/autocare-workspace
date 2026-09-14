@@ -2,6 +2,7 @@ import React from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, ViewStyle } from 'react-native';
 import { roundness, spacing } from '@/utils/theme';
 import { useTheme } from '@/hooks/useTheme';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 type Variant = 'primary' | 'outline' | 'muted' | 'danger';
 
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: 'Inter_600SemiBold',
-    fontSize: 18,
+    fontSize: RFValue(18),
   },
   disabled: { opacity: 0.5 },
   pressed: { opacity: 0.85 },

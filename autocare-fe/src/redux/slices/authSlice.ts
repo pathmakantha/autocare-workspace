@@ -10,6 +10,11 @@ interface AuthState {
   isGuest: boolean;
   user: User | null;
   token: string | null;
+  /**
+   * True when the signed-in account has no password yet (Google sign-up). The navigator
+   * shows only the SetPassword screen while this is true.
+   */
+  mustSetPassword: boolean;
 }
 
 const initialState: AuthState = {
@@ -18,6 +23,7 @@ const initialState: AuthState = {
   isGuest: false,
   user: null,
   token: null,
+  mustSetPassword: false,
 };
 
 export type ProfilePayload = { name: string; email: string; phone?: string };
@@ -39,10 +45,12 @@ const authSlice = createSlice({
       state.isGuest = false;
       state.user = action.payload.user;
       state.token = action.payload.token;
+      state.mustSetPassword = action.payload.user.hasPassword === false;
       state.screen = 'main';
     },
     continueAsGuest(state) {
       state.isGuest = true;
+      state.mustSetPassword = false;
       state.screen = 'main';
       if (!state.user) state.user = { id: 'guest', name: '', email: '', phone: '' };
     },
@@ -51,11 +59,17 @@ const authSlice = createSlice({
     updateProfileLocal(state, action: PayloadAction<User>) {
       state.user = action.payload;
     },
+    // The Google-sign-up account just chose its first password — lift the gate.
+    passwordSetComplete(state, action: PayloadAction<User>) {
+      state.user = action.payload;
+      state.mustSetPassword = false;
+    },
     logout(state) {
       state.isAuthenticated = false;
       state.isGuest = false;
       state.user = null;
       state.token = null;
+      state.mustSetPassword = false;
       state.screen = 'auth';
     },
   },
@@ -66,5 +80,12 @@ const authSlice = createSlice({
   },
 });
 
-export const { setScreen, loginSuccess, continueAsGuest, updateProfileLocal, logout } = authSlice.actions;
+export const {
+  setScreen,
+  loginSuccess,
+  continueAsGuest,
+  updateProfileLocal,
+  passwordSetComplete,
+  logout,
+} = authSlice.actions;
 export default authSlice.reducer;

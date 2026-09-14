@@ -8,6 +8,7 @@ import {
 } from '../controllers/vehicle.controller';
 import { requireAuth } from '../middleware/auth.middleware';
 import maintenanceRouter from './maintenance.routes';
+import documentRouter from './document.routes';
 
 const router = Router();
 
@@ -21,5 +22,8 @@ router.delete('/:id', deleteVehicle);
 
 // Nested maintenance records: /api/vehicles/:vehicleId/records
 router.use('/:vehicleId/records', maintenanceRouter);
+
+// Nested documents: /api/vehicles/:vehicleId/documents
+router.use('/:vehicleId/documents', documentRouter);
 
 export default router;
